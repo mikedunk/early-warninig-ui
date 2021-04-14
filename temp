@@ -1,0 +1,249 @@
+<template>
+  <teleport to="body">
+    <div
+      class="modal-backdrop fade"
+      id="pending-complaint"
+      tabindex="-1"
+      role="dialog"
+      aria-labelledby="modal-default"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-lg modal-dialog-centered" role="dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h2 class="h6 modal-title">Early Warning Tool</h2>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p class="text-center">
+              If you have identified a change while caring for or observing a
+              resident please <u>check</u> the change and notify a nurse. Either
+              give the nurse a copy of this tool or review it with him/her as
+              soon as you can
+            </p>
+            <input
+              class="form-check-input"
+              type="checkbox"
+              value="123"
+              id="check1"
+            />
+            <label class="form-check-label" for="check1">
+              <b class="text-danger fs-5">S</b>eems different than usual
+            </label>
+
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check2"
+              />
+              <label class="form-check-label" for="check2">
+                <b class="text-danger fs-5">T</b>alks or communicates less
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check3"
+              />
+              <label class="form-check-label" for="check3">
+                <b class="text-danger fs-5">O</b>verall needs more help
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check4"
+              />
+              <label class="form-check-label" for="check4">
+                <b class="text-danger fs-5">P</b>ain - new or worsening;
+                Participated less in activities
+              </label>
+            </div>
+            <p></p>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check5"
+              />
+              <label class="form-check-label" for="check5">
+                <b class="text-danger fs-5">A</b>te less
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check6"
+              />
+              <label class="form-check-label" for="check6">
+                <b class="text-danger fs-5">N</b>o bowel movement in 3 days; or
+                diarrhea
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check7"
+              />
+              <label class="form-check-label" for="check7">
+                <b class="text-danger fs-5">D</b>rank Less
+              </label>
+            </div>
+            <p></p>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check8"
+              />
+              <label class="form-check-label" for="check8">
+                <b class="text-danger fs-5">W</b>eight change
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check9"
+              />
+              <label class="form-check-label" for="check9">
+                <b class="text-danger fs-5">A</b>gitated or nervous more than
+                usual
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check10"
+              />
+              <label class="form-check-label" for="check10">
+                <b class="text-danger fs-5">T</b>ired, weak, confused or drowsy
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check11"
+              />
+              <label class="form-check-label" for="check11">
+                <b class="text-danger fs-5">C</b>hange in skin color or
+                condition
+              </label>
+            </div>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check12"
+              />
+              <label class="form-check-label" for="check12">
+                <b class="text-danger fs-5">H</b>elp with walking, transferring,
+                toileting more than usual
+              </label>
+            </div>
+
+            <p></p>
+            <div class="form-check">
+              <input
+                class="form-check-input"
+                type="checkbox"
+                value=""
+                id="check12"
+              />
+              <label class="form-check-label" for="check12">
+                <small
+                  >Check here if no change was noticed while monitoring high
+                  risk patient
+                </small>
+              </label>
+            </div>
+            <p></p>
+            <form>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <div>
+                    <label for="first_name">Resident's Name</label>
+                    <input
+                      class="form-control"
+                      id="first_name"
+                      type="text"
+                      placeholder="Enter resident's name"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <div>
+                    <label for="last_name">Your Name</label>
+                    <input
+                      class="form-control form-text text-muted"
+                      id="last_name"
+                      type="text"
+                      placeholder="Adam Lallana"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+              <p></p>
+              <div class="row">
+                <div class="col-md-6 mb-3">
+                  <div>
+                    <label for="first_name">Report to</label>
+                    <input
+                      class="form-control"
+                      id="first_name"
+                      type="text"
+                      required
+                    />
+                  </div>
+                </div>
+                <div class="col-md-6 mb-3">
+                  <div>
+                    <label for="last_name">Nurse's name</label>
+                    <input
+                      class="form-control"
+                      id="last_name"
+                      type="text"
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            </form>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary">Submit</button>
+            <button
+              type="button"
+              class="btn btn-link text-gray ms-auto"
+              data-bs-dismiss="modal"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      </div>
