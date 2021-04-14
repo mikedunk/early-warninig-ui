@@ -1,20 +1,20 @@
 <template>
-
   <main class="content">
     <div
       class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center py-4"
     >
       <div class="btn-toolbar dropdown">
         <button
-          class="btn btn-dark btn-sm me-2 dropdown-toggle "
-          aria-haspopup="true"
-          aria-expanded="false"
-          @click="showModal=true"
-        >  
-          <span class="fas fa-plus me-2"></span>
+          type="button"
+          class="btn btn-block btn-dark mb-3"
+          data-bs-toggle="modal"
+          data-bs-target="#modal-default"
+          @click="cons"
+        >
           New Complaint
-        </button> 
-        <ComplaintModal :showModal="true" @close="closeModal()"/>
+        </button>
+
+        <!-- <DisplayModal :fondle="asun" @cfinsih="closeModal" /> -->
       </div>
       <div class="btn-group">
         <button type="button" class="btn btn-dark btn-sm me-2">Export</button>
@@ -159,17 +159,20 @@
 
 <script>
 //import Pagination from "../components/Pagination";
+//import DisplayModal from "../components/DisplayModal.vue";
 //import ComplaintModal from "../components/ComplaintModal.vue";
 
 export default {
   components: {
-
-
+   // DisplayModal,
+    //  ComplaintModal,
   },
 
   data() {
     return {
       visible: false,
+      asun: "asun",
+      craft:'asun'
     };
   },
   name: "MyComplaints",
@@ -182,6 +185,10 @@ export default {
     },
     closeModal() {
       this.visible = false;
+      console.log("im not okobo once again");
+    },
+    cons() {
+      console.log("im not okobo");
     },
   },
 };

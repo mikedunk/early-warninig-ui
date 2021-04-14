@@ -58,7 +58,7 @@
                   </div>
                   <div
                     class="text-danger"
-                    v-if="
+                    v-show="
                       form.password !== '' &&
                       form.confirmPassword !== '' &&
                       form.password !== form.confirmPassword
@@ -80,7 +80,7 @@
                       placeholder="Confirm Password"
                       class="form-control"
                       id="confirm_password"
-                      :class="{ 'is-invalid': false}"
+                      :class="{ 'is-invalid': false }"
                       required
                       v-model="form.confirmPassword"
                     />
@@ -111,35 +111,50 @@
                   />
                 </div>
 
-                <div class="mb-4">
+                <!-- <div class="mb-4">
                   <label class="my-1 me-2" for="role">Select User Role </label>
                   <select
+                    name="role"
                     v-model="form.user_type"
-                    @click="error = null"
                     class="form-select"
                     id="role"
                     aria-label=""
+                    @click="error = null"
                   >
+                   <option selected>Open this select menu</option>
                     <option
-                      v-for="ut in usertypes"
-                      :key="ut.id"
                       :value="ut.name"
+                      v-for="(ut, id) in usertypes"
+                      :key="id"
                     >
                       {{ ut.description }}
                     </option>
                   </select>
+                </div> -->
+                <div class="mb-4">
+                  <label class="my-1 me-2" for="country">Select Role</label>
+                  <select
+                  v-model="form.user_type"
+                    class="form-select"
+                    id="role"
+                    aria-label="Select role"
+                  >
+                    <option value="nurse">Nurse</option>
+                    <option value="care_giver">Care Giver</option>
+                  </select>
                 </div>
               </div>
 
-              <div class="text-danger" v-if="error">
+              <div class="text-danger" v-show="error">
                 {{ error }}
               </div>
 
               <div class="d-grid">
                 <button
                   type="submit"
-                  :disabled="buttonDisabled"
                   class="btn btn-dark"
+                  data-loading-text="Creating User"
+                   :disabled="buttonDisabled"
                 >
                   Sign in
                 </button>
@@ -173,7 +188,7 @@ export default {
         first_name: "",
         last_name: "",
         user_type: "",
-        confirmPassword:""
+        confirmPassword: "",
       },
       error: null,
       usertypes: [],
@@ -192,7 +207,7 @@ export default {
       try {
         const roles = await Service.getRoles();
         this.usertypes = roles.data.user_types;
-      console.log(this.usertypes)
+        console.log(this.usertypes);
       } catch (error) {
         console.log(error);
       }
@@ -203,7 +218,10 @@ export default {
         const newuser = await Service.signup(this.form);
         console.log(newuser);
         if (newuser.data.success === true) {
-          const res = await Service.login({email:this.form.email, password:this.form.password});
+          const res = await Service.login({
+            email: this.form.email,
+            password: this.form.password,
+          });
           console.log(res);
 
           if (typeof Storage !== "undefined") {
@@ -229,7 +247,6 @@ export default {
         return true;
       } else return false;
     },
-   
   },
 };
 </script>

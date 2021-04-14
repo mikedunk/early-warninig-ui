@@ -3,6 +3,7 @@
     <div ref="modal-backdrop">
       <div class="modal">
         <div
+          id="comp"
           role="document"
           aria-modal="true"
           aria-labelledby="modal-headline"

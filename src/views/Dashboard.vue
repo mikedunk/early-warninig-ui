@@ -49,7 +49,6 @@
                   <td class="fw-normal">
                     {{ item.created_at_date }}
                   </td>
-                  <td></td>
                 </tr>
               </tbody>
             </table>
@@ -177,6 +176,8 @@ export default {
     this.getAllPendingComplaints();
     this.getTreatedCount();
 
+    console.log(".....dashboard.....");
+    console.log(sessionStorage.token);
     const user_ = JSON.parse(sessionStorage.user);
     this.usertype = user_.role;
   },

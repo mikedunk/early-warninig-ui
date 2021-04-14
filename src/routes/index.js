@@ -7,7 +7,8 @@ import Navigation from '@/views/Navigation.vue';
 import SignUp from '@/views/SignUp.vue';
 import Login from '@/views/Login.vue';
 
-let user_ = null
+let user_ ;
+let token;
 
 const routes = [
     {
@@ -39,7 +40,7 @@ const routes = [
                 component: Dashboard,
                 meta: { requiresAuth: true },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined){
+                    if (user_ == undefined && token== undefined){
                         next({ name: 'login' })
                     }
                     else next()
@@ -52,7 +53,7 @@ const routes = [
                 component: MyComplaints,
                 meta: { requiresAuth: true, userType: 'care_giver' },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined){
+                    if (user_ == undefined  && token== undefined){
                         next({ name: 'login' })
                     }
                     else next()
@@ -66,7 +67,7 @@ const routes = [
                 component: PendingComplaints,
                 meta: { requiresAuth: true, userType: 'nurse' },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined){
+                    if (user_ == undefined  && token== undefined ){
                         next({ name: 'login' })
                     }
                     else next()
@@ -79,7 +80,7 @@ const routes = [
                 component: TreatedComplaints,
                 meta: { requiresAuth: true, userType: 'nurse' },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined){
+                    if (user_ == undefined  && token== undefined){
                         next({ name: 'login' })
                     }
                     else next()
@@ -102,6 +103,7 @@ const router = createRouter({
 router.beforeEach((to, from, next) => {
 
      user_ = sessionStorage.user
+     token = sessionStorage.token
     next()
 
 });

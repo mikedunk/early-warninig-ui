@@ -13,7 +13,7 @@
             <div class="text-center text-md-center mb-4 mt-md-0">
               <h1 class="mb-0 h3">Login to the platform</h1>
             </div>
-            <form class="mt-4" @submit.prevent="login()">
+            <form class="mt-4" @submit.prevent="login">
               <!-- Form -->
               <div class="form-group mb-4">
                 <label for="email">Your Email</label>
@@ -62,6 +62,7 @@
               <div class="d-grid">
                 <button class="btn btn-dark">Login</button>
               </div>
+
             </form>
 
             <div class="d-flex justify-content-center align-items-center mt-4">
@@ -101,6 +102,9 @@ export default {
           sessionStorage.setItem("token", res.data.token);
           sessionStorage.setItem("user",JSON.stringify(res.data.userobj));
         } else throw new Error("Session Storage Disabled");
+
+        console.log(sessionStorage.user)
+        console.log(sessionStorage.token)
         this.$router.push({path : "/user/dashboard"})
       } catch (error) {
         console.log(error);
