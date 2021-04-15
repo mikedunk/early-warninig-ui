@@ -1,18 +1,15 @@
 <template>
-           <ComplaintModal :showModal="true" @close="closeModal()" />
   <router-view />
 </template>
 
 
 <script>
-//import DisplayModal from "./components/DisplayModal";
-import ComplaintModal from "./components/DisplayModal";
 
 export default {
   name: "App",
   components: {
   
-    ComplaintModal
+
   },
   methods: {
     showModal() {

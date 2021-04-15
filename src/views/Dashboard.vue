@@ -49,6 +49,30 @@
                   <td class="fw-normal">
                     {{ item.created_at_date }}
                   </td>
+                  <td>
+                    <div class="btn-group">
+                      <button
+                        class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
+                        data-bs-toggle="dropdown"
+                        aria-haspopup="true"
+                        aria-expanded="false"
+                      >
+                        <span class="icon icon-sm">
+                          <span class="fas fa-ellipsis-h icon-dark"></span>
+                        </span>
+                        <span class="sr-only">Toggle Dropdown</span>
+                      </button>
+                      <div class="dropdown-menu py-0">
+                        <a
+                          class="dropdown-item rounded-top"
+                          data-bs-toggle="modal"
+                          data-bs-target="#dashboard-pending-complaint"
+                          href="#"
+                          ><span class="fas fa-eye me-2"></span>View Details</a
+                        >
+                      </div>
+                    </div>
+                  </td>
                 </tr>
               </tbody>
             </table>
@@ -176,8 +200,6 @@ export default {
     this.getAllPendingComplaints();
     this.getTreatedCount();
 
-    console.log(".....dashboard.....");
-    console.log(sessionStorage.token);
     const user_ = JSON.parse(sessionStorage.user);
     this.usertype = user_.role;
   },

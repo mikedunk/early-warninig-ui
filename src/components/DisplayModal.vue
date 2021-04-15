@@ -1,45 +1,36 @@
 <template>
+
   <div
     class="modal fade"
-    id="modal-default"
+    id="display-modal"
     tabindex="-1"
     role="dialog"
-    aria-labelledby="modal-default"
+    data-bs-backdrop="static" 
+    aria-labelledby="display-modal"
     aria-hidden="true"
   >
-    <div class="modal-dialog modal-dialog-centered modal-lg" role="document">
+    <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="h6 modal-title">Terms of Service</h2>
+          <h2 class="h6 modal-title">Details</h2>
           <button
             type="button"
             class="btn-close"
-            data-bs-dismiss="modal"
             aria-label="Close"
+            @click="handleModalClose"
           ></button>
         </div>
         <div class="modal-body">
-          {{ fondle }}
           <p>
-            With less than a month to go before the European Union enacts new
-            consumer privacy laws for its citizens, companies around the world
-            are updating their terms of service agreements to comply.
-          </p>
-          <p>
-            The European Union’s General Data Protection Regulation (G.D.P.R.)
-            goes into effect on May 25 and is meant to ensure a common set of
-            data rights in the European Union. It requires organizations to
-            notify users as soon as possible of high-risk data breaches that
-            could personally affect them.
+            Content of this complaint
           </p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary">Accept</button>
+          <button type="button" class="btn btn-secondary">Create</button>
           <button
             type="button"
             class="btn btn-link text-gray ms-auto"
-            data-bs-dismiss="modal"
-            @click="closeinside()"
+            @click="handleModalClose"
           >
             Close
           </button>
@@ -53,35 +44,32 @@
 
 
 
-
-
-
 <script>
+import bootstrap from "bootstrap/dist/js/bootstrap";
 import Service from "@/apis/services";
+
 export default {
-  emits: ["finsih"],
+  emits: ["close"],
+  name: "displaymodal",
   props: {
-    fondle: {
-      type: String,
+    visible: {
+      type: Boolean,
       required: true,
     },
   },
 
   data() {
     return {
-        complaints:[]
+      complaints: "",
     };
   },
-  name: "DisplayModal",
-   mounted() {
-    this.getComplaints();
+  mounted() {
+    console.log(this.$props)
+    this.modal = new bootstrap.Modal(document.getElementById('display-modal'), {
+      keyboard: false
+    })
   },
-
   methods: {
-    closeinside() {
-      console.log("modal dismissed");
-      this.$emit("finsih");
-    },
     async getComplaints() {
       try {
         const complaints = await Service.getComplaints();
@@ -91,6 +79,29 @@ export default {
         console.log(error);
       }
     },
+    async displayModal() {
+      if (this.visible) {
+        this.modal.show();
+        await this.getComplaints();
+      }
+    },
+    hideModal() {
+      this.modal.hide();
+    },
+    handleModalClose() {
+      this.$emit("close");
+    }
   },
+  updated() {
+    console.log("updated: ", this.$props)
+    if(this.visible) {
+      this.displayModal();
+    } else {
+      this.hideModal();
+    }
+  }
 };
 </script>
+
+
+
