@@ -13,8 +13,6 @@
           <span class="fas fa-plus me-2"></span>
           New Complaint
         </button>
-
-       
       </div>
       <div class="btn-group">
         <button type="button" class="btn btn-dark btn-sm me-2">Export</button>
@@ -30,11 +28,11 @@
           <tr></tr>
           <tr>
             <th>Resident's Name</th>
-            <th>Nurse</th>
+            <th>Nurse reported to</th>
             <th>Date</th>
             <th>Time</th>
             <th>Status</th>
-            <th>Action</th>
+            <th>Show details</th>
           </tr>
         </thead>
         <tbody>
@@ -44,7 +42,7 @@
               {{ item.resident_name }}
             </td>
             <td class="fw-normal">
-              {{ item.nurse_name }}
+              {{ getReported(item.reported_to) }}
             </td>
             <td class="fw-normal">
               {{ item.created_at_date }}
@@ -52,34 +50,21 @@
             <td class="fw-normal">
               {{ item.created_at_time }}
             </td>
-
             <td class="fw-normal" :class="textGuru(item.status)">
               {{ item.status }}
             </td>
-
-            <!-- <td><span class="fw-bold text-success">Treated</span></td> -->
             <td>
               <div class="btn-group">
                 <button
                   class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
-                  data-bs-toggle="dropdown"
                   aria-haspopup="true"
                   aria-expanded="false"
+                  @click="showGModal(item)"
                 >
                   <span class="icon icon-sm">
                     <span class="fas fa-ellipsis-h icon-dark"></span>
                   </span>
-                  <span class="sr-only">Toggle Dropdown</span>
                 </button>
-                <div class="dropdown-menu py-0">
-                  <a
-                    class="dropdown-item rounded-top"
-                    data-bs-toggle="modal"
-                    data-bs-target="#dashboard-pending-complaint"
-                    href="#"
-                    ><span class="fas fa-eye me-2"></span>View Details</a
-                  >
-                </div>
               </div>
             </td>
           </tr>
@@ -101,10 +86,87 @@
           Showing <b>{{ mycomplaints.length }}</b> out of
           <b>{{ total }}</b> entries
         </div>
+
+        <GenericModal
+          :visible="showGenericModal"
+          :title="'Complaint Details'"
+          :rand="randomItem"
+          @closeGenericModal="closeGModal"
+        >
+          <template v-slot:body>
+            <div class="list-group-item d-flex align-items-start">
+              Resident's Name : &nbsp;&nbsp;
+              <b>{{ randomItem.resident_name }} </b>
+              <p></p>
+              <p></p>
+            </div>
+
+            <div class="list-group-item d-flex align-items-start">
+              Complaints :
+            </div>
+
+            <ul
+              class="d-flex align-items-center"
+              v-for="i in randomItem.complaint"
+              :key="i.id"
+            >
+              <li>
+                <b>{{ i.description }}</b>
+              </li>
+            </ul>
+            <div
+              class="list-group-item d-flex align-items-start"
+              v-if="randomItem.reported_to !== 'null' || '' || null"
+            >
+              Reported To: &nbsp;&nbsp; <b>{{ randomItem.reported_to }}</b>
+            </div>
+
+            <div class="list-group-item d-flex align-items-start">
+              Status: &nbsp;&nbsp;
+              <b :class="textGuru(randomItem.status)">{{
+                randomItem.status
+              }}</b>
+            </div>
+            <div
+              class="list-group-item d-flex align-items-start"
+              v-if="randomItem.status !== 'pending'"
+            >
+              Nurse's Name: &nbsp;&nbsp; {{ randomItem.nurse_name }}
+            </div>
+
+            <div
+              class="list-group-item d-flex align-items-start"
+              v-if="randomItem.status !== 'pending'"
+            >
+              Nurse's Response: &nbsp;&nbsp;
+              <p>{{ randomItem.nurse_response }}</p>
+            </div>
+
+            <div
+              class="list-group-item d-flex align-items-start"
+              v-if="randomItem.status !== 'pending'"
+            >
+              Date responded: &nbsp;&nbsp;
+              <b>{{ randomItem.responded_at_date }} </b> &nbsp;&nbsp; Time
+              responded: &nbsp;&nbsp; <b> {{ randomItem.responded_at_time }}</b>
+            </div>
+            <div
+              class="list-group-item d-flex align-items-start"
+              v-if="randomItem.status !== 'pending'"
+            >
+              Care giver's Name:&nbsp;&nbsp;
+              <b>{{ randomItem.care_giver_name }}</b>
+            </div>
+          </template>
+        </GenericModal>
       </div>
     </div>
 
-    <ComplaintModal :visible="showComplaintModal" :complaints="datacomplaints"  @close="closeModal" />
+    <ComplaintModal
+      :visible="showComplaintModal"
+      :complaint="datacomplaints"
+      @close="closeModal"
+    />
   </main>
 </template>
 
@@ -114,11 +176,13 @@
 import Service from "@/apis/services";
 import Pagination from "../components/Pagination";
 import ComplaintModal from "../components/ComplaintModal.vue";
+import GenericModal from "../components/GenericModal.vue";
 
 export default {
   components: {
     ComplaintModal,
     Pagination,
+    GenericModal,
   },
 
   data() {
@@ -129,7 +193,9 @@ export default {
       page: 1,
       numberOfItems: 0,
       pageCount: 1,
-      datacomplaints :[]
+      datacomplaints: [],
+      showGenericModal: false,
+      randomItem: {},
     };
   },
   name: "MyComplaints",
@@ -147,6 +213,16 @@ export default {
     },
     closeModal() {
       this.showComplaintModal = false;
+      this.getMyComplaints();
+    },
+
+    showGModal(item) {
+      this.randomItem = item;
+      this.showGenericModal = true;
+    },
+
+    closeGModal() {
+      this.showGenericModal = false;
     },
 
     async getMyComplaints(page, pageSize) {
@@ -162,23 +238,24 @@ export default {
         console.log(error);
       }
     },
-    
-    async getComplaints(){
 
-           try {
+    async getComplaints() {
+      try {
         const res = await Service.getComplaints();
-        this.datacomplaints = res.data
+        this.datacomplaints = res.data;
       } catch (error) {
         console.log(error);
       }
-      
     },
 
-    
     textGuru(text) {
       if (text == "pending") return "text-secondary";
-      else if (text == "treated") return "text-success";
+      else if (text == "resolved") return "text-success";
       else "text-primary";
+    },
+    getReported(item) {
+      if (item == "null" || null || "") return "Not assigned";
+      else return item;
     },
 
     async pageChangeHandle(value) {

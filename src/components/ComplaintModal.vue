@@ -7,16 +7,10 @@
     aria-labelledby="complaint-modal"
     aria-hidden="true"
   >
-    <div class="modal-dialog modal-lg modal-dialog-centered" role="document">
+    <div class="modal-dialog modal-lg" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <div></div>
-          <p class="text-center">
-            If you have identified a change while caring for or observing a
-            resident please <u>check</u> the change and notify a nurse. Either
-            give the nurse a copy of this tool or review it with him/her as soon
-            as you can
-          </p>
+          <h2 class="h6 modal-title">Early Warning Tool</h2>
           <button
             type="button"
             class="btn-close"
@@ -24,25 +18,91 @@
             @click="handleModalClose"
           ></button>
         </div>
-        <div class="modal-body">
-          <template v-for="complaint in complaints" :key="complaint.id">
-            <li>
-              <input
-                class="form-check-input"
-                type="checkbox"
-                value="123"
-                id="check1"
-              />
-              <label class="form-check-label" for="check1">
-                <!-- <b class="text-danger fs-5">S</b>eems different than usual -->
-                {{ complaint.description }}
-              </label>
-            </li>
-          </template>
-        </div>
 
+        <div class="modal-body ">
+          <form @submit.prevent="lodge">
+            <p class="text-center">
+              If you have identified a change while caring for or observing a
+              resident please <u>check</u> the change and notify a nurse. Either
+              give the nurse a copy of this tool or review it with him/her as
+              soon as you can
+            </p>
+       <ul class="list-group " >
+            <li class="list-group-item d-flex align-items-start" v-for="comp in complaint" :key="comp.id">
+              <input
+                type="checkbox"
+                :id="comp.tag"
+                :checked="comp.checked"
+                :value="comp"
+                class="form-check-input"
+                v-model="form.complaint"
+                @click="error = null"
+              />
+              <label class="form-check-label" :for="comp.id">
+                <b class="text-danger fs-5">{{ comp.description.charAt(0) }}</b
+                >{{ comp.description.substring(1) }}
+              </label>
+              <p></p>
+            </li>
+       </ul>
+            <div class="row">
+              <div>
+                <div>
+                  <label for="resident_name">Resident's Name</label>
+                  <input
+                    class="form-control"
+                    id="resident_name"
+                    type="text"
+                    placeholder="Enter resident's name"
+                    required
+                    v-model="form.resident_name"
+                    @click="error = null"
+                  />
+                </div>
+                <div>
+                  <p></p>
+                </div>
+
+                <div>
+                  <label for="reported_to">Reported to</label>
+                  <input
+                    class="form-control"
+                    id="reported_to"
+                    type="text"
+                    placeholder="Start typing a nurse's name"
+                    v-model="form.reported_to"
+                    @click="error = null"
+                  />
+                </div>
+                <div>
+                  <label for="full_name">Your Name</label>
+                  <input
+                    class="form-control"
+                    id="full_name"
+                    :value="full_name"
+                    type="text"
+                    required
+                    disabled
+                  />
+                </div>
+              </div>
+            </div>
+           
+          </form>
+          <div class="text-danger" v-show="error">
+            {{ error }}
+          </div>
+        </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary">Create</button>
+          <button
+            type="button"
+            class="btn btn-secondary"
+            @click="lodge"
+            :disabled="buttonDisabled"
+          >
+            Create
+          </button>
+
           <button
             type="button"
             class="btn btn-link text-gray ms-auto"
@@ -62,7 +122,7 @@
 
 <script>
 import bootstrap from "bootstrap/dist/js/bootstrap";
-//import Service from "@/apis/services";
+import Service from "@/apis/services";
 
 export default {
   emits: ["close"],
@@ -73,14 +133,23 @@ export default {
       required: true,
     },
 
-    complaints: {
+    complaint: {
       type: Array,
       required: true,
     },
   },
 
   data() {
-    return {};
+    return {
+      lodgedComplaints: [],
+      form: {
+        complaint: [],
+        resident_name: "",
+        reported_to: "",
+      },
+      full_name: "",
+      error: "",
+    };
   },
   mounted() {
     console.log(this.$props);
@@ -91,12 +160,15 @@ export default {
         backdrop: "static",
       }
     );
+
+    const user = JSON.parse(sessionStorage.user);
+    this.full_name = user.lastName + " " + user.firstName;
   },
+
   methods: {
     async displayModal() {
       if (this.visible) {
         this.modal.show();
-        //  await this.getComplaints();
       }
     },
     hideModal() {
@@ -105,23 +177,40 @@ export default {
     handleModalClose() {
       this.$emit("close");
     },
+
+    async lodge() {
+      console.log(this.form);
+
+      try {
+        await Service.raiseNewComplaint(this.form);
+
+        this.form={}
+         this.handleModalClose();
+      } catch (error) {
+        console.log(error.response.data.message);
+        this.error = error.response.data.message;
+      }
+    },
   },
   updated() {
     // console.log("updated: ", this.$props);
+
     if (this.visible) {
       this.displayModal();
     } else {
       this.hideModal();
     }
   },
-  // computed() {
-  //   // console.log("updated: ", this.$props);
-  //   if (this.visible) {
-  //     this.displayModal();
-  //   } else {
-  //     this.hideModal();
-  //   }
-  // },
+  computed: {
+    buttonDisabled() {
+      if (
+        this.error !== null ||
+        this.form.resident_name == null
+      ) {
+        return true;
+      } else return false;
+    },
+  },
 };
 </script>
 
