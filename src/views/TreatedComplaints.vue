@@ -13,6 +13,7 @@
             <th>Date Reported</th>
             <th>Date Treated</th>
             <th>Time Treated</th>
+            <th>View Details</th>
           </tr>
         </thead>
         <tbody>
@@ -34,6 +35,20 @@
             </td>
             <td class="fw-nomal">
               {{ item.responded_at_time }}
+            </td>
+              <td>
+              <div class="btn-group">
+                <button
+                  class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  @click="showGModal(item)"
+                >
+                  <span class="icon icon-sm">
+                    <span class="fas fa-ellipsis-h icon-dark"></span>
+                  </span>
+                </button>
+              </div>
             </td>
           </tr>
         </tbody>
@@ -57,6 +72,71 @@
         </div>
       </div>
     </div>
+            <GenericModal
+        :visible="showGenericModal"
+        :title="'Pending Complaints'"
+        :rand="randomItem"
+        @closeGenericModal="closeGModal"
+        @submitData="closeGModal"
+
+      >
+        <template v-slot:body>
+            <h2 class="h5 mb-4">Complaint Details</h2>
+            <ul class="list-group list-group-flush ">
+              <li
+                class="list-group-item d-flex align-items-center justify-content-center px-0 border-top border-bottom"
+              >
+                <div>
+                    <h2 class="small mb-1">Resident's Name</h2>
+                    <p class="h5 pe-4">
+                  <b>{{ randomItem.resident_name }} </b>
+                    </p>
+                </div>
+              </li>
+              <li
+                class="list-group-item align-items-center justify-content-between px-0 border-bottom"
+              >
+                <div>
+                  <h3 class="small mb-1">Complaints</h3>
+                  <p class="small pe-4">
+                <ul
+                    class=" align-items-center justify-content-between" 
+                    v-for="i in randomItem.complaint"
+                    :key="i.id"
+                  >
+                    <li>
+                      <b>{{ i.description }}</b>
+                    </li>
+               </ul>
+                  </p>
+                </div>
+                <p class="small">by</p>
+                <div><b>{{randomItem.care_giver_name}}</b></div>
+                <div class="justify-content-center">
+                   <div class="small ">{{randomItem.created_at_date}}  at {{randomItem.created_at_time}}</div>
+                </div>
+
+              </li>
+              <li
+                class="list-group-item align-items-center justify-content-center px-0"
+              >
+                <div>
+                    <h2 class="small mb-1">Nurse's Response</h2>
+                    <p class="h5 pe-4 justify-content-center">
+                  <b>{{ randomItem.nurse_response }} </b>
+                    </p>
+                </div>
+                <p class="small">by</p>
+                <div><b>{{randomItem.nurse_name}}</b></div>
+                <div class="justify-content-center">
+                   <div class="small ">{{randomItem.responded_at_date}}  at {{randomItem.responded_at_time}}</div>
+                </div>
+              </li>  
+
+            </ul>
+       
+        </template>
+      </GenericModal>
 
     <!-- <div class="card theme-settings theme-settings-expand" id="theme-settings-expand">
       <div class="card-body p-3 py-2">
@@ -73,10 +153,13 @@
 import Service from "@/apis/services";
 
 import Pagination from "../components/Pagination";
+import GenericModal from "../components/GenericModal";
+
 
 export default {
   components: {
     Pagination,
+    GenericModal
   },
   data() {
     return {
@@ -85,6 +168,8 @@ export default {
       page: 1,
       numberOfItems: 10,
       pageCount: 1,
+      showGenericModal: false,
+      randomItem: {},
     };
   },
   async created() {
@@ -94,8 +179,6 @@ export default {
     async getAllResolvedComplaints(page, pageSize) {
       try {
         const res = await Service.getAllResolvedComplaints(page, pageSize);
-
-        console.log(res.data.resolved_complaints.data[0]);
 
         this.treated = res.data.resolved_complaints.data;
         this.total = res.data.resolved_complaints.total;
@@ -121,6 +204,23 @@ export default {
 
       await this.getAllResolvedComplaints(this.page, this.numberOfItems);
     },
+
+    showGModal(item) {
+      this.randomItem = item;
+      this.showGenericModal = true;
+    },
+    closeGModal() {
+      this.showGenericModal = false;
+    },
+  },
+  textGuru(text) {
+    if (text == "pending") return "text-secondary";
+    else if (text == "resolved") return "text-success";
+    else "text-primary";
+  },
+  getReported(item) {
+    if (item == "null" || null || "") return "Not assigned";
+    else return item;
   },
 };
 

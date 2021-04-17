@@ -26,12 +26,13 @@
                 <tr>
                   <th>Resident's Name</th>
                   <th>Reported By</th>
-                  <th>Nurse</th>
+                  <th>Nurse reported to</th>
                   <th>Date</th>
                   <th>Time</th>
+                  <th>View details</th>
                 </tr>
               </thead>
-              <tbody class="table table-hover">
+              <tbody class="table-hover">
                 <!-- Item -->
                 <tr v-for="item in pendingcomplaints" :key="item.id">
                   <td class="fw-bold">
@@ -41,36 +42,26 @@
                     {{ item.care_giver_name }}
                   </td>
                   <td class="fw-normal">
-                    {{ item.reported_to }}
+                    {{ getReported(item.reported_to) }}
                   </td>
                   <td class="fw-normal">
                     {{ item.created_at_date }}
                   </td>
                   <td class="fw-normal">
-                    {{ item.created_at_date }}
+                    {{ item.created_at_time }}
                   </td>
                   <td>
                     <div class="btn-group">
                       <button
                         class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
-                        data-bs-toggle="dropdown"
                         aria-haspopup="true"
                         aria-expanded="false"
+                        @click="showGModal(item)"
                       >
                         <span class="icon icon-sm">
                           <span class="fas fa-ellipsis-h icon-dark"></span>
                         </span>
-                        <span class="sr-only">Toggle Dropdown</span>
                       </button>
-                      <div class="dropdown-menu py-0">
-                        <a
-                          class="dropdown-item rounded-top"
-                          data-bs-toggle="modal"
-                          data-bs-target="#dashboard-pending-complaint"
-                          href="#"
-                          ><span class="fas fa-eye me-2"></span>View Details</a
-                        >
-                      </div>
                     </div>
                   </td>
                 </tr>
@@ -97,6 +88,87 @@
           </div>
         </div>
       </div>
+      <GenericModal
+        :visible="showGenericModal"
+        :title="'Pending Complaints'"
+        :rand="randomItem"
+        :okButtonText="'Respsond'"
+        @closeGenericModal="closeGModal"
+        @submitData="respondToComplaint"
+
+      >
+         <template v-slot:body>
+            <h2 class="h5 mb-4">Complaint Details</h2>
+            <ul class="list-group list-group-flush ">
+              <li
+                class="list-group-item d-flex align-items-center justify-content-center px-0 border-top border-bottom"
+              >
+                <div>
+                    <h2 class="small mb-1">Resident's Name</h2>
+                    <p class="h5 pe-4">
+                  <b>{{ randomItem.resident_name }} </b>
+                    </p>
+                </div>
+              </li>
+             <li
+                class="list-group-item align-items-center justify-content-between px-0 border-bottom"
+              >
+                <div>
+                  <h3 class="small mb-1">Complaints</h3>
+                  <p class="small pe-4">
+                <ul
+                    class=" align-items-center justify-content-between" 
+                    v-for="i in randomItem.complaint"
+                    :key="i.id"
+                  >
+                    <li>
+                      <b>{{ i.description }}</b>
+                    </li>
+               </ul>
+                  </p>
+                </div>
+                <p class="small">by</p>
+                <div><b>{{randomItem.care_giver_name}}</b></div>
+                <div class="justify-content-center">
+                   <div class="small ">{{randomItem.created_at_date}}  at {{randomItem.created_at_time}}</div>
+                </div>
+
+              </li>
+              <li
+                v-if="randomItem.reported_to !== 'null' || '' || null"
+                class="list-group-item d-flex align-items-center justify-content-center px-0 border-bottom"
+              ><div>
+                  <h2 class="small mb-1">Reported to</h2>
+
+                  <p class="h5 pe-4">
+                 <b>{{ randomItem.reported_to }} </b>
+                  </p>
+               </div>
+              </li>            
+             <li
+                class="list-group-item   justify-content-center px-0"
+              >
+              <div>
+              <label for="treatComplaint" class="form-label small"
+                >Respond to complaint</label
+              >
+              <textarea
+                class="form-control"
+                id="treatComplaint"
+                rows="3"
+                v-model="form.nurse_response"
+                required
+                  @click="modalErrorDiv = null"
+              ></textarea>
+              </div>
+             </li>
+              <div class="text-danger" v-show="modalErrorDiv">
+                {{ modalErrorDiv }}
+              </div>
+            </ul>
+       
+        </template>
+      </GenericModal>
     </div>
     <div class="row justify-content-md-center">
       <div class="col-12 col-sm-6 col-xl-6 mb-4">
@@ -177,13 +249,14 @@
 
 <script>
 import Service from "@/apis/services";
-//import BasePagination from "../components/BasePagination";
+import GenericModal from "../components/GenericModal";
 
 import Pagination from "../components/Pagination";
 
 export default {
   components: {
     Pagination,
+    GenericModal,
   },
   data() {
     return {
@@ -194,6 +267,10 @@ export default {
       pageCount: 1,
       treatedCount: 0,
       usertype: "",
+      showGenericModal: false,
+      randomItem: {},
+      form: {},
+      modalErrorDiv: null
     };
   },
   created() {
@@ -226,6 +303,19 @@ export default {
         console.log(error);
       }
     },
+    async respondToComplaint() {
+      try {
+        this.form.id = this.randomItem.id
+        await Service.respondToComplaints(this.form);
+        this.form={}
+        this.closeGModal();
+        this.getAllPendingComplaints()
+
+      } catch (error) {
+        this.modalErrorDiv = error.response.data.message
+        console.log(error);
+      }
+    },
 
     async pageChangeHandle(value) {
       switch (value) {
@@ -241,6 +331,18 @@ export default {
 
       await this.getAllPendingComplaints(this.page, this.numberOfItems);
     },
+    getReported(item) {
+      if (item == "null" || null || "") return "Not assigned";
+      else return item;
+    },
+    showGModal(item) {
+      this.randomItem = item;
+      this.showGenericModal = true;
+    },
+    closeGModal() {
+      this.showGenericModal = false;    
+    }
+
   },
 };
 

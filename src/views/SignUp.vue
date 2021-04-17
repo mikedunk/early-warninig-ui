@@ -207,7 +207,6 @@ export default {
       try {
         const roles = await Service.getRoles();
         this.usertypes = roles.data.user_types;
-        console.log(this.usertypes);
       } catch (error) {
         console.log(error);
       }
@@ -216,13 +215,11 @@ export default {
     async signup() {
       try {
         const newuser = await Service.signup(this.form);
-        console.log(newuser);
         if (newuser.data.success === true) {
           const res = await Service.login({
             email: this.form.email,
             password: this.form.password,
           });
-          console.log(res);
 
           if (typeof Storage !== "undefined") {
             sessionStorage.setItem("token", res.data.token);
