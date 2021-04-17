@@ -14,9 +14,9 @@
           New Complaint
         </button>
       </div>
-      <div class="btn-group">
+      <!-- <div class="btn-group">
         <button type="button" class="btn btn-dark btn-sm me-2">Export</button>
-      </div>
+      </div> -->
     </div>
 
     <div class="card card-body shadow-sm table-wrapper table-responsive">
@@ -32,7 +32,7 @@
             <th>Date</th>
             <th>Time</th>
             <th>Status</th>
-            <th>Show details</th>
+            <th>View details</th>
           </tr>
         </thead>
         <tbody>
@@ -87,78 +87,72 @@
           <b>{{ total }}</b> entries
         </div>
 
-        <GenericModal
-          :visible="showGenericModal"
-          :title="'Complaint Details'"
-          :rand="randomItem"
-          @closeGenericModal="closeGModal"
-        >
-          <template v-slot:body>
-            <div class="list-group-item d-flex align-items-start">
-              Resident's Name : &nbsp;&nbsp;
-              <b>{{ randomItem.resident_name }} </b>
-              <p></p>
-              <p></p>
-            </div>
+     <GenericModal
+        :visible="showGenericModal"
+        :title="'Pending Complaints'"
+        :rand="randomItem"
+        @closeGenericModal="closeGModal"
+        @submitData="closeGModal"
 
-            <div class="list-group-item d-flex align-items-start">
-              Complaints :
-            </div>
-
-            <ul
-              class="d-flex align-items-center"
-              v-for="i in randomItem.complaint"
-              :key="i.id"
-            >
-              <li>
-                <b>{{ i.description }}</b>
+      >
+        <template v-slot:body>
+            <h2 class="h5 mb-4">Complaint Details</h2>
+            <p :class="textGuru(randomItem.status)"> {{randomItem.status}}</p>
+            <ul class="list-group list-group-flush ">
+              <li
+                class="list-group-item d-flex align-items-center justify-content-center px-0 border-top border-bottom"
+              >
+                <div>
+                    <h2 class="small mb-1">Resident's Name</h2>
+                    <p class="h5 pe-4">
+                  <b>{{ randomItem.resident_name }} </b>
+                    </p>
+                </div>
               </li>
+              <li
+                class="list-group-item align-items-center justify-content-between px-0 border-bottom"
+              >
+                <div>
+                  <h3 class="small mb-1">Complaints</h3>
+                  <p class="small pe-4">
+                <ul
+                    class=" align-items-center justify-content-between" 
+                    v-for="i in randomItem.complaint"
+                    :key="i.id"
+                  >
+                    <li>
+                      <b>{{ i.description }}</b>
+                    </li>
+               </ul>
+                  </p>
+                </div>
+                <p class="small">by</p>
+                <div><b>{{randomItem.care_giver_name}}</b></div>
+                <div class="justify-content-center">
+                   <div class="small ">{{randomItem.created_at_date}}  at {{randomItem.created_at_time}}</div>
+                </div>
+
+              </li>
+              <li v-if="randomItem.status !=='pending'"
+                class="list-group-item align-items-center justify-content-center px-0"
+              >
+                <div>
+                    <h2 class="small mb-1">Nurse's Response</h2>
+                    <p class="h5 pe-4 justify-content-center">
+                  <b>{{ randomItem.nurse_response }} </b>
+                    </p>
+                </div>
+                <p class="small">by</p>
+                <div><b>{{randomItem.nurse_name}}</b></div>
+                <div class="justify-content-center">
+                   <div class="small ">{{randomItem.responded_at_date}}  at {{randomItem.responded_at_time}}</div>
+                </div>
+              </li>  
+
             </ul>
-            <div
-              class="list-group-item d-flex align-items-start"
-              v-if="randomItem.reported_to !== 'null' || '' || null"
-            >
-              Reported To: &nbsp;&nbsp; <b>{{ randomItem.reported_to }}</b>
-            </div>
-
-            <div class="list-group-item d-flex align-items-start">
-              Status: &nbsp;&nbsp;
-              <b :class="textGuru(randomItem.status)">{{
-                randomItem.status
-              }}</b>
-            </div>
-            <div
-              class="list-group-item d-flex align-items-start"
-              v-if="randomItem.status !== 'pending'"
-            >
-              Nurse's Name: &nbsp;&nbsp; {{ randomItem.nurse_name }}
-            </div>
-
-            <div
-              class="list-group-item d-flex align-items-start"
-              v-if="randomItem.status !== 'pending'"
-            >
-              Nurse's Response: &nbsp;&nbsp;
-              <p>{{ randomItem.nurse_response }}</p>
-            </div>
-
-            <div
-              class="list-group-item d-flex align-items-start"
-              v-if="randomItem.status !== 'pending'"
-            >
-              Date responded: &nbsp;&nbsp;
-              <b>{{ randomItem.responded_at_date }} </b> &nbsp;&nbsp; Time
-              responded: &nbsp;&nbsp; <b> {{ randomItem.responded_at_time }}</b>
-            </div>
-            <div
-              class="list-group-item d-flex align-items-start"
-              v-if="randomItem.status !== 'pending'"
-            >
-              Care giver's Name:&nbsp;&nbsp;
-              <b>{{ randomItem.care_giver_name }}</b>
-            </div>
-          </template>
-        </GenericModal>
+       
+        </template>
+      </GenericModal>
       </div>
     </div>
 

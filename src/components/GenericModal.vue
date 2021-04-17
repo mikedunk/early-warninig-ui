@@ -43,7 +43,7 @@
 import bootstrap from "bootstrap/dist/js/bootstrap";
 
 export default {
-  emits: ["closeGenericModal", "submit"],
+  emits: ["closeGenericModal", "submitData"],
   name: "GenericModal",
   props: {
     visible: {
@@ -96,11 +96,8 @@ export default {
     }
   },
   updated() {
-    console.log("updated: ", this.$props);
     if (this.visible) {
       this.displayModal();
-         console.log('this.rand'),
-         console.log(this.rand)
     } else {
       this.hideModal();
     }

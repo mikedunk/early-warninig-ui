@@ -64,7 +64,7 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$props)
+
     this.modal = new bootstrap.Modal(document.getElementById('display-modal'), {
       keyboard: false
     })
@@ -74,7 +74,6 @@ export default {
       try {
         const complaints = await Service.getComplaints();
         this.complaints = complaints.data;
-        console.log(complaints.data);
       } catch (error) {
         console.log(error);
       }
@@ -93,7 +92,7 @@ export default {
     }
   },
   updated() {
-    console.log("updated: ", this.$props)
+  
     if(this.visible) {
       this.displayModal();
     } else {

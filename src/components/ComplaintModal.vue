@@ -152,7 +152,6 @@ export default {
     };
   },
   mounted() {
-    console.log(this.$props);
     this.modal = new bootstrap.Modal(
       document.getElementById("complaint-modal"),
       {
@@ -179,8 +178,6 @@ export default {
     },
 
     async lodge() {
-      console.log(this.form);
-
       try {
         await Service.raiseNewComplaint(this.form);
 
@@ -193,8 +190,6 @@ export default {
     },
   },
   updated() {
-    // console.log("updated: ", this.$props);
-
     if (this.visible) {
       this.displayModal();
     } else {

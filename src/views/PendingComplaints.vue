@@ -12,7 +12,7 @@
             <th>Nurse reported to</th>
             <th>Date</th>
             <th>Time</th>
-            <th>Show details</th>
+            <th>View details</th>
           </tr>
         </thead>
         <tbody class=" table-hover">
