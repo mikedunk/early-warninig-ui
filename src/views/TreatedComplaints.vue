@@ -72,7 +72,7 @@
         </div>
       </div>
     </div>
-            <GenericModal
+    <GenericModal
         :visible="showGenericModal"
         :title="'Pending Complaints'"
         :rand="randomItem"
