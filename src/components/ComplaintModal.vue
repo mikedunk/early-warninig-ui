@@ -19,7 +19,7 @@
           ></button>
         </div>
 
-        <div class="modal-body ">
+        <div class="modal-body">
           <form @submit.prevent="lodge">
             <p class="text-center">
               If you have identified a change while caring for or observing a
@@ -27,24 +27,30 @@
               give the nurse a copy of this tool or review it with him/her as
               soon as you can
             </p>
-       <ul class="list-group " >
-            <li class="list-group-item d-flex align-items-start" v-for="comp in complaint" :key="comp.id">
-              <input
-                type="checkbox"
-                :id="comp.tag"
-                :checked="comp.checked"
-                :value="comp"
-                class="form-check-input"
-                v-model="form.complaint"
-                @click="error = null"
-              />
-              <label class="form-check-label" :for="comp.id">
-                <b class="text-danger fs-5">{{ comp.description.charAt(0) }}</b
-                >{{ comp.description.substring(1) }}
-              </label>
-              <p></p>
-            </li>
-       </ul>
+            <ul class="list-group">
+              <li
+                class="list-group-item d-flex align-items-start"
+                v-for="comp in complaint"
+                :key="comp.id"
+              >
+                <input
+                  type="checkbox"
+                  :id="comp.tag"
+                  :checked="comp.checked"
+                  :value="comp"
+                  class="form-check-input"
+                  v-model="form.complaint"
+                  @click="error = null"
+                />
+                <label class="form-check-label" :for="comp.id">
+                  <b class="text-danger fs-5">{{
+                    comp.description.charAt(0)
+                  }}</b
+                  >{{ comp.description.substring(1) }}
+                </label>
+                <p></p>
+              </li>
+            </ul>
             <div class="row">
               <div>
                 <div>
@@ -87,7 +93,6 @@
                 </div>
               </div>
             </div>
-           
           </form>
           <div class="text-danger" v-show="error">
             {{ error }}
@@ -113,6 +118,11 @@
         </div>
       </div>
     </div>
+    <!-- <SearchAutocomplete 
+    @suggestions=nurses
+    @selection=values
+    
+    /> -->
   </div>
 </template>
 
@@ -123,8 +133,10 @@
 <script>
 import bootstrap from "bootstrap/dist/js/bootstrap";
 import Service from "@/apis/services";
+//import SearchAutocomplete from "./SearchAutocomplete.vue";
 
 export default {
+ // components: { SearchAutocomplete },
   emits: ["close"],
   name: "ComplaintModal",
   props: {
@@ -149,6 +161,8 @@ export default {
       },
       full_name: "",
       error: "",
+      nurses: [],
+      value:""
     };
   },
   mounted() {
@@ -180,12 +194,23 @@ export default {
     async lodge() {
       try {
         await Service.raiseNewComplaint(this.form);
+        console.log(this.form);
 
-        this.form={}
-         this.handleModalClose();
+        this.form = {};
+        this.handleModalClose();
       } catch (error) {
         console.log(error.response.data.message);
         this.error = error.response.data.message;
+      }
+    },
+    async getNurses() {
+      try {
+        const nurses = await Service.getNurses();
+        this.nurses = nurses.data.nurses
+
+
+      } catch (error) {
+        console.log(error);
       }
     },
   },
@@ -198,10 +223,7 @@ export default {
   },
   computed: {
     buttonDisabled() {
-      if (
-        this.error !== null ||
-        this.form.resident_name == null
-      ) {
+      if (this.error !== null || this.form.resident_name == null) {
         return true;
       } else return false;
     },

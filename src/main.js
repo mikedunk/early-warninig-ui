@@ -9,7 +9,7 @@ import 'simplebar'
 import '@fortawesome/fontawesome-free/css/all.css'; 
 import '@fortawesome/fontawesome-free/js/all.js' ;
 import '../src/assets/css/volt.css';
-import '../src/assets/js/volt.js';
+//import '../src/assets/js/volt.js';
 
 import Axios from 'axios'
 
