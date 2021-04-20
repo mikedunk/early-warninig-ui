@@ -1,4 +1,5 @@
 <template>
+<body>
   <nav class="navbar navbar-dark navbar-theme-primary px-4 col-12 d-md-none">
     <div class="d-flex align-items-center">
       <button
@@ -112,6 +113,7 @@
     </div>
   </nav>
   <router-view />
+</body>
 </template>
 
 

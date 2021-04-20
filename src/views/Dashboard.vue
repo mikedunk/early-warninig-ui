@@ -176,7 +176,7 @@
           <div class="card-body">
             <div class="row d-block d-xl-flex align-items-center">
               <div
-                class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center"
+                class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-center"
               >
                 <div
                   class="icon icon-shape icon-md icon-shape-primary rounded me-4 me-sm-0"
@@ -211,7 +211,7 @@
           <div class="card-body">
             <div class="row d-block d-xl-flex align-items-center">
               <div
-                class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-xl-center"
+                class="col-12 col-xl-5 text-xl-center mb-3 mb-xl-0 d-flex align-items-center justify-content-center"
               >
                 <div
                   class="icon icon-shape icon-md icon-shape-secondary rounded me-4"
