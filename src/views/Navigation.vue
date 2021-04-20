@@ -4,11 +4,11 @@
       <button
         class="navbar-toggler d-md-none collapsed"
         type="button"
-        data-bs-toggle="collapse"
-        data-bs-target="#sidebarMenu"
         aria-controls="sidebarMenu"
         aria-expanded="false"
         aria-label="Toggle navigation"
+        :class="{collapsed: !turnOffShow}"
+        @click="turnOffShow = true"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -17,13 +17,14 @@
   <nav
     id="sidebarMenu"
     class="sidebar d-md-block bg-dark text-white collapse"
+    :class="{ show:turnOffShow }"
     data-simplebar
   >
     <div class="sidebar-inner px-4 pt-3">
       <div
         class="user-card d-flex d-md-none align-items-center justify-content-between justify-content-md-center pb-4"
       >
-        <div class="d-flex align-items-center">
+        <!-- <div class="d-flex align-items-center"> -->
           <!-- <div class="user-avatar lg-avatar me-4">
             <img src="../../assets/img/team/profile-picture-3.jpg" class="card-img-top rounded-circle border-white"
               alt="Bonnie Green">
@@ -33,16 +34,14 @@
             <a href="../../pages/examples/sign-in.html" class="btn btn-secondary text-dark btn-xs"><span
                 class="me-2"><span class="fas fa-sign-out-alt"></span></span>Sign Out</a>
           </div> -->
-        </div>
-        <div class="collapse-close d-md-none">
+        <!-- </div> -->
+        <div class="collapse-close d-md-none"  @click="turnOffShow = false">
           <a
-            href="#sidebarMenu"
             class="fas fa-times"
-            data-bs-toggle="collapse"
-            data-bs-target="#sidebarMenu"
             aria-controls="sidebarMenu"
             aria-expanded="true"
             aria-label="Toggle navigation"
+            @click="turnOffShow = false"
           ></a>
         </div>
       </div>
@@ -57,7 +56,7 @@
         </li>
         <div>
           <li class="nav nav-item">
-            <router-link class="nav-link" to="/user/dashboard">
+            <router-link class="nav-link" to="/user/dashboard" @click="turnOffShow=false">
               <span class="sidebar-icon">
                 <span class="fas fa-chart-pie"></span>
               </span>
@@ -66,7 +65,7 @@
           </li>
         </div>
 
-        <div v-if="usertype == 'admin' || usertype == 'care_giver'">
+        <div v-if="usertype == 'admin' || usertype == 'care_giver'" @click="turnOffShow=false">
           <li class="nav nav-item">
             <router-link class="nav-link" to="/user/mycomplaints">
               <span class="sidebar-icon"
@@ -76,7 +75,7 @@
             </router-link>
           </li>
         </div>
-        <div v-if="usertype == 'admin' || usertype == 'nurse'">
+        <div v-if="usertype == 'admin' || usertype == 'nurse'" @click="turnOffShow=false">
           <li class="nav nav-item">
             <router-link class="nav-link" to="/user/pendingcomplaints">
               <span class="sidebar-icon"
@@ -87,7 +86,7 @@
           </li>
         </div>
 
-        <div v-if="usertype == 'admin' || usertype == 'nurse'">
+        <div v-if="usertype == 'admin' || usertype == 'nurse'" @click="turnOffShow=false">
           <li class="nav nav-item">
             <router-link class="nav-link" to="/user/treatedcomplaints">
               <span class="sidebar-icon">
@@ -122,6 +121,7 @@ export default {
   data() {
     return {
       usertype: null,
+      turnOffShow: false,
     };
   },
   mounted() {
