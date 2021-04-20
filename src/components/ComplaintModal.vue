@@ -42,7 +42,7 @@
                   v-model="form.complaint"
                   @click="error = null"
                 />
-                <label class="form-check-label" :for="comp.id">
+                <label class="form-check-label" :for="comp.tag">
                   <b class="text-danger fs-5">{{
                     comp.description.charAt(0)
                   }}</b
@@ -188,6 +188,7 @@ export default {
       this.modal.hide();
     },
     handleModalClose() {
+      this.form.complaint=[]
       this.$emit("close");
     },
 
@@ -195,8 +196,7 @@ export default {
       try {
         await Service.raiseNewComplaint(this.form);
         console.log(this.form);
-
-        this.form = {};
+        this.form = {}
         this.handleModalClose();
       } catch (error) {
         console.log(error.response.data.message);

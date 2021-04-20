@@ -12,11 +12,6 @@ import '../src/assets/css/volt.css';
 //import '../src/assets/js/volt.js';
 
 import Axios from 'axios'
-console.log("....abi.base_url")
-console.log(api.base_url)
-
-console.log("....abi.api_url")
-console.log(api.api_url)
 Axios.defaults.baseURL = api.base_url;
 
 
