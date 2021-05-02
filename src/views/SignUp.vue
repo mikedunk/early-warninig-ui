@@ -132,7 +132,7 @@
                   </select>
                 </div> -->
                 <div class="mb-4">
-                  <label class="my-1 me-2" for="country">Select Role</label>
+                  <label class="my-1 me-2" for="role">Select Role</label>
                   <select
                   v-model="form.user_type"
                     class="form-select"
@@ -225,7 +225,7 @@ export default {
             sessionStorage.setItem("token", res.data.token);
             sessionStorage.setItem("user", JSON.stringify(res.data.userobj));
           } else throw new Error("Session Storage Disabled");
-          this.$router.push({ path: "/user/dashboard" });
+          this.$router.push({ path: "/auth/dashboard" });
         }
       } catch (error) {
         this.error = error.response.data.message;

@@ -102,7 +102,7 @@ export default {
           sessionStorage.setItem("token", res.data.token);
           sessionStorage.setItem("user",JSON.stringify(res.data.userobj));
         } else throw new Error("Session Storage Disabled");
-        this.$router.push({path : "/user/dashboard"})
+        this.$router.push({path : "/auth/dashboard"})
       } catch (error) {
         console.log(error);
         sessionStorage.clear()

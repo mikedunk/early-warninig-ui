@@ -123,6 +123,10 @@
     @selection=values
     
     /> -->
+    <StreamBarcodeReader
+      @decode="onDecode"
+      @loaded="onLoaded"
+    ></StreamBarcodeReader>
   </div>
 </template>
 
@@ -132,11 +136,12 @@
 
 <script>
 import bootstrap from "bootstrap/dist/js/bootstrap";
+import { StreamBarcodeReader } from "vue-barcode-reader";
 import Service from "@/apis/services";
 //import SearchAutocomplete from "./SearchAutocomplete.vue";
 
 export default {
- // components: { SearchAutocomplete },
+  components: { StreamBarcodeReader },
   emits: ["close"],
   name: "ComplaintModal",
   props: {
@@ -162,7 +167,7 @@ export default {
       full_name: "",
       error: "",
       nurses: [],
-      value:""
+      value: "",
     };
   },
   mounted() {
@@ -188,15 +193,14 @@ export default {
       this.modal.hide();
     },
     handleModalClose() {
-      this.form.complaint=[]
+      this.form.complaint = [];
       this.$emit("close");
     },
-
     async lodge() {
       try {
         await Service.raiseNewComplaint(this.form);
         console.log(this.form);
-        this.form = {}
+        this.form = {};
         this.handleModalClose();
       } catch (error) {
         console.log(error.response.data.message);
@@ -206,14 +210,22 @@ export default {
     async getNurses() {
       try {
         const nurses = await Service.getNurses();
-        this.nurses = nurses.data.nurses
-
-
+        this.nurses = nurses.data.nurses;
       } catch (error) {
         console.log(error);
       }
     },
+    onDecode(result) {
+      console.log(result);
+    },
+    onError(result) {
+      console.log(result);
+    },
+    onLoaded(){
+      
+    }
   },
+
   updated() {
     if (this.visible) {
       this.displayModal();

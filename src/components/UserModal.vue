@@ -1,18 +1,16 @@
 <template>
-
   <div
     class="modal fade"
-    id="display-modal"
+    id="user-modal"
     tabindex="-1"
     role="dialog"
-    data-bs-backdrop="static" 
-    aria-labelledby="display-modal"
+    aria-labelledby="user-modal"
     aria-hidden="true"
   >
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="h6 modal-title">Details</h2>
+          <h2 class="h6 modal-title">{{ title }}</h2>
           <button
             type="button"
             class="btn-close"
@@ -21,18 +19,18 @@
           ></button>
         </div>
         <div class="modal-body">
-          <p>
-            Content of this complaint
-          </p>
+          <slot name="body"> default body </slot>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-secondary">Create</button>
+          <button type="button" class="btn btn-secondary" @click="handleSubmit">
+            {{ okButtonText }}
+          </button>
           <button
             type="button"
             class="btn btn-link text-gray ms-auto"
             @click="handleModalClose"
           >
-            Close
+            {{ cancelButtonText }}
           </button>
         </div>
       </div>
@@ -41,21 +39,32 @@
 </template>
 
 
-
-
-
 <script>
 import bootstrap from "bootstrap/dist/js/bootstrap";
-import Service from "@/apis/services";
 
 export default {
-  emits: ["close"],
-  name: "displaymodal",
+  emits: ["closeUserModal", "submitData"],
+  name: "UserModal",
   props: {
     visible: {
       type: Boolean,
       required: true,
     },
+    title: {
+      type: String,
+      default: "Modal Title",
+    },
+    okButtonText: {
+      type: String,
+      default: "Ok",
+    },
+    cancelButtonText: {
+      type: String,
+      default: "Close",
+    },
+    rand:{
+        type:Object
+    }
   },
 
   data() {
@@ -64,41 +73,35 @@ export default {
     };
   },
   mounted() {
-
-    this.modal = new bootstrap.Modal(document.getElementById('display-modal'), {
-      keyboard: false
-    })
+    this.modal = new bootstrap.Modal(document.getElementById("user-modal"), {
+      keyboard: false,
+      backdrop:'static'
+    });
   },
   methods: {
-    async getComplaints() {
-      try {
-        const complaints = await Service.getComplaints();
-        this.complaints = complaints.data;
-      } catch (error) {
-        console.log(error);
-      }
-    },
     async displayModal() {
       if (this.visible) {
         this.modal.show();
-        await this.getComplaints();
+     
       }
     },
     hideModal() {
       this.modal.hide();
     },
     handleModalClose() {
-      this.$emit("close");
+      this.$emit("closeUserModal");
+    },
+    handleSubmit(){
+        this.$emit("submitData");
     }
   },
   updated() {
-  
-    if(this.visible) {
+    if (this.visible) {
       this.displayModal();
     } else {
       this.hideModal();
     }
-  }
+  },
 };
 </script>
 
