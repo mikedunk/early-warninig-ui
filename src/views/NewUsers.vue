@@ -16,7 +16,7 @@
             <div class="row mb-4">
               <div class="col-lg-4 col-sm-6"></div>
               <div class="col-lg-4 col-sm-6">
-                <form class="mt-4" @submit.prevent="createUser()">
+                <form class="mt-4" @submit.prevent="">
                   <!-- Form -->
 
                   <div class="mb-4">
@@ -24,11 +24,12 @@
                     <input
                       type="email"
                       class="form-control"
-                      :class="{ 'is-valid': emailAvailable }"
+                      :class="{ 'is-valid': emailValid}"
                       id="email"
                       aria-describedby="emailHelp"
                       v-model="form.email"
-                       @click="error = null"
+                      @click="error = null"
+                      @keyup="emailValid"
                     />
                   </div>
                   <div class="mb-3">
@@ -39,7 +40,7 @@
                       id="firstName"
                       required
                       v-model="form.first_name"
-                       @click="error = null"
+                      @click="error = null"
                     />
                     <!-- is-valid this class ticks green  -->
                   </div>
@@ -52,6 +53,7 @@
                       id="lastName"
                       required
                       v-model="form.last_name"
+                      @click="error = null"
                     />
                     <!-- is-valid this class ticks green  -->
                     <div class="valid-feedback">Looks good!</div>
@@ -67,14 +69,12 @@
                       <option :value="role.name">{{ role.description }}</option>
                     </template>
                   </select>
-                  <div class="text-danger" v-show="error">
-                    {{ error }}
-                  </div>
                   <div>
                     <button
                       :disabled="buttonDisabled"
                       class="btn btn-dark"
                       type="submit"
+                      @click="showGModal(form)"
                     >
                       Create user
                     </button>
@@ -88,14 +88,59 @@
         </div>
       </div>
     </div>
+    <UserModal
+      :visible="showUserModal"
+      :title="'Create New User'"
+      :rand="randomUser"
+      :okButtonText="'Create'"
+      @closeUserModal="closeGModal"
+      @submitData="handleUserCreation"
+    >
+      <template v-slot:body>
+        <div>
+          <h5 class="h6 align-items-center">
+            Are you sure you want to create a new user?
+          </h5>
+        </div>
+        <ul class="justify-content-center border-top">
+          <li>
+            First name :
+            <b> {{ randomUser.first_name }}</b>
+          </li>
+          <li>
+            Last Name :
+            <b>{{ randomUser.last_name }}</b>
+          </li>
+          <li>
+            Email :
+            <b>{{ randomUser.email }}</b>
+          </li>
+          <li>
+            Role :
+
+            <b> {{ randomUser.user_type }}</b>
+          </li>
+        </ul>
+        <div class="text-danger" v-show="error">
+          {{ error }}
+        </div>
+        <div class="loading" v-if="loading">
+          <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
+        </div>
+      </template>
+    </UserModal>
   </main>
 </template>
 
 
 <script>
 import Service from "@/apis/services";
+import UserModal from "../components/UserModal.vue";
 
 export default {
+  components: {
+    UserModal,
+  },
   name: "signup",
   data() {
     return {
@@ -109,6 +154,12 @@ export default {
       usertypes: [],
       ifempty: false,
       emailAvailable: false,
+      randomUser: {},
+      showUserModal: false,
+      userRoleDesc: "",
+      createSuccess: false,
+      loading: false,
+      emailFormatValid: false,
     };
   },
 
@@ -125,26 +176,45 @@ export default {
         console.log(error);
       }
     },
-    async validateEmail() {
-      try {
-        const emailExists = await Service.validateEmail(this.form.email);
-        if (emailExists.data.success === true) {
-          this.emailAvailable = true;
-        }
-      } catch (error) {
-        console.log(error);
-      }
-    },
+
     async createUser() {
+      this.loading = true;
       try {
         const newuser = await Service.backOfficeSignUp(this.form);
         if (newuser.data.success === true) {
           this.createSuccess = true;
         }
       } catch (error) {
-        console.log(error.response.data.error)
+        console.log(error.response.data.error);
         this.error = error.response.data.error;
         console.log(error);
+      } finally {
+        this.loading = false;
+      }
+    },
+    showGModal(item) {
+      this.randomUser = item;
+      this.showUserModal = true;
+    },
+    closeGModal() {
+      this.showUserModal = false;
+    },
+    doNoth() {
+      console.log("I'm not doing shit");
+    },
+    handleUserCreation() {
+      this.createUser();
+    },
+    async checkIfEmailExists() {
+      {
+        try {
+          const emailExists = await Service.validateEmail(this.form.email);
+          if (emailExists.data.success === true) {
+            this.emailAvailable = true;
+          }
+        } catch (error) {
+          console.log(error);
+        }
       }
     },
   },
@@ -154,12 +224,41 @@ export default {
         return true;
       } else return false;
     },
-  },
 
-  watch: {
-    email() {
-      this.validateEmail();
+    emailValid() {
+      if (this.form.email.length < 6) {
+        return false;
+      }
+      const mailformat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+      if (mailformat.test(this.form.email)) {
+        return true;
+      } else {
+        return false;
+      }
     },
   },
 };
 </script>
+
+
+<style scoped>
+#axiosForm {
+  /* Components Root Element ID */
+  position: relative;
+}
+.loader {
+  /* Loader Div Class */
+  position: relative;
+  top: 0px;
+  right: 0px;
+  width: 100%;
+  height: 100%;
+  background-color: #eceaea;
+  background-size: 50px;
+  background-repeat: no-repeat;
+  background-position: center;
+  z-index: 10000000;
+  opacity: 0.4;
+  filter: alpha(opacity=40);
+}
+</style>

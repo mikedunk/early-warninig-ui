@@ -47,6 +47,7 @@
                       ><span class="fas fa-unlock-alt"></span
                     ></span>
                     <input
+                     autocomplete="new_password" 
                       type="password"
                       placeholder="Password"
                       class="form-control"
@@ -76,6 +77,7 @@
                       ><span class="fas fa-unlock-alt"></span
                     ></span>
                     <input
+                     autocomplete="new_password" 
                       type="password"
                       placeholder="Confirm Password"
                       class="form-control"
@@ -134,7 +136,7 @@
                 <div class="mb-4">
                   <label class="my-1 me-2" for="role">Select Role</label>
                   <select
-                  v-model="form.user_type"
+                    v-model="form.user_type"
                     class="form-select"
                     id="role"
                     aria-label="Select role"
@@ -154,7 +156,7 @@
                   type="submit"
                   class="btn btn-dark"
                   data-loading-text="Creating User"
-                   :disabled="buttonDisabled"
+                  :disabled="buttonDisabled"
                 >
                   Sign in
                 </button>

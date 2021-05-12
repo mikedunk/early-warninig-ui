@@ -48,48 +48,13 @@
         </thead>
         <tbody class="table-hover">
           <!-- Item -->
-          <tr v-for="user in allUsers" :key="user.code">
-            <td class="fw-bold">
-              {{ user.first_name.charAt(0).toUpperCase()
-              }}{{ user.first_name.substring(1) }}
-            </td>
-            <td class="fw-normal">
-              {{ user.last_name.charAt(0).toUpperCase()
-              }}{{ user.last_name.substring(1) }}
-            </td>
-            <td class="fw-normal">
-              {{ user.email }}
-            </td>
-            <td class="fw-normal" :class="roleGuru(user.Role.name)">
-              {{ user.Role.description }}
-            </td>
-            <td class="fw-normal" :class="textGuru(user.is_active)">
-              {{ status(user.is_active) }}
-            </td>
-            <td>
-              <div class="btn-group">
-                <button
-                  class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
-                  @click="showOptions(user)"
-                >
-                  <span class="icon icon-sm pt-1"
-                    ><span class="fas fa-ellipsis-h icon-dark"></span> </span
-                  ><span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu py-0" :class="{ show: showFor }">
-                  <a class="dropdown-item rounded-top" href="#"
-                    ><span class="fas fa-user-shield me-2"></span> Reset Pass</a
-                  >
-                  <a class="dropdown-item" href="#"
-                    ><span class="fas fa-eye me-2"></span>View Details</a
-                  >
-                  <a class="dropdown-item text-danger rounded-bottom" href="#"
-                    ><span class="fas fa-user-times me-2"></span>Suspend</a
-                  >
-                </div>
-              </div>
-            </td>
-          </tr>
+          <ListItem
+            v-for="(user, index) in allUsers"
+            :key="index"
+            :user="user"
+            :ind="index"
+            @action="doNoth"
+          />
         </tbody>
       </table>
       <div
@@ -109,8 +74,8 @@
       </div>
     </div>
 
-    <GenericModal
-      :visible="showGenericModal"
+    <UserModal
+      :visible="showUserModal"
       :title="'Pending Complaints'"
       :rand="randomUser"
       :okButtonText="'Respsond'"
@@ -118,7 +83,7 @@
       @submitData="doNoth"
     >
       <template v-slot:body> </template>
-    </GenericModal>
+    </UserModal>
 
     <div
       class="card theme-settings theme-settings-expand"
@@ -135,13 +100,15 @@
 
 <script>
 import Service from "@/apis/services";
-import GenericModal from "../components/GenericModal.vue";
-import Pagination from "../components/Pagination";
+import UserModal from "../components/UserModal.vue";
+import Pagination from "../components/Pagination.vue";
+import ListItem from "../components/ListItem.vue";
 
 export default {
   components: {
     Pagination,
-    GenericModal,
+    UserModal,
+    ListItem,
   },
   data() {
     return {
@@ -150,14 +117,28 @@ export default {
       page: 1,
       numberOfItems: 10,
       pageCount: 1,
-      showGenericModal: false,
-      randomUser: {},
+      showUserModal: false,
+      randomUser: {
+        code: "833afb64-2c26-4e36-ac5e-22aec55597cd",
+        username: "michaelayeyemimikedunk01@gmail.com",
+        email: "mikedunk01@gmail.com",
+        phone_number: null,
+        first_name: "michael",
+        last_name: "ayeyemi",
+        is_active: true,
+        reset_password: true,
+        Role: {
+          id: 2,
+          name: "nurse",
+          description: "Nurse",
+        },
+      },
       form: {},
       modalErrorDiv: null,
       showFor: false,
       usertypes: [],
       searchterm: "",
-      randomRole: "all",
+      randomRole: null,
     };
   },
   async mounted() {
@@ -209,7 +190,7 @@ export default {
 
     showGModal(item) {
       this.randomUser = item;
-      this.showGenericModal = true;
+      this.showUserModal = true;
     },
     textGuru(text) {
       if (text == true) return "text-success";
@@ -232,12 +213,12 @@ export default {
     },
 
     closeGModal() {
-      this.showGenericModal = false;
+      this.showUserModal = false;
     },
-    showOptions(user) {
-      this.showFor = !this.showFor;
-      this.randomUser = user;
-    },
+    // showOptions(user) {
+    //   this.showFor = !this.showFor;
+    //   this.randomUser = user;
+    // },
 
     findSelection(role) {
       this.randomRole = role;

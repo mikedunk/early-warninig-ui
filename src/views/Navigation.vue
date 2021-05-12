@@ -74,16 +74,16 @@
               <span
                 class="nav-link d-flex justify-content-between align-items-center"
                 :class="{ collapsed: !collapseMenu }"
-                @click="toggle()"
+                 @click="toggle"
               >
                 <span>
                   <span class="sidebar-icon"
-                    ><span class="fas fa-users "></span
+                    ><span class="fas fa-users"></span
                   ></span>
                   <span class="sidebar-text">Users</span>
                 </span>
                 <span class="link-arrow"
-                  ><span class="fas" :class="selIcon"></span
+                  ><span class="fas fa" :class="selIcon"></span
                 ></span>
               </span>
               <div
@@ -97,7 +97,7 @@
                   <li class="nav-item">
                     <router-link class="nav-link" to="/auth/users">
                       <span class="sidebar-icon">
-                        <span class="fas  fa-user"></span>
+                        <span class="fas fa-user"></span>
                       </span>
                       <span class="sidebar-text">View Users</span>
                     </router-link>
@@ -105,7 +105,7 @@
                   <li class="nav-item">
                     <router-link class="nav-link" to="/auth/users/new">
                       <span class="sidebar-icon">
-                        <span class="fas   fa-user-plus"></span>
+                        <span class="fas fa-user-plus"></span>
                       </span>
                       <span class="sidebar-text">New User</span>
                     </router-link>
@@ -201,14 +201,11 @@ export default {
     },
     toggle() {
       this.collapseMenu = !this.collapseMenu;
-      if (this.collapseMenu === true) {
-        this.selIcon = "fa-chevron-right";
-      } else this.selIcon = "fa-chevron-down";
     },
   },
   computed: {
     selIcon() {
-      if (this.collapseMenu) {
+      if (this.collapseMenu == true) {
         return "fa-chevron-right";
       } else return "fa-chevron-down";
     },

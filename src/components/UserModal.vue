@@ -10,7 +10,7 @@
     <div class="modal-dialog modal-dialog-centered" role="document">
       <div class="modal-content">
         <div class="modal-header">
-          <h2 class="h6 modal-title">{{ title }}</h2>
+          <h2 class="h6 modal-title align-content-center">{{ title }}</h2>
           <button
             type="button"
             class="btn-close"
