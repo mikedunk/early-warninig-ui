@@ -43,6 +43,7 @@
                       ><span class="fas fa-unlock-alt"></span
                     ></span>
                     <input
+                      autocomplete="password" 
                       type="password"
                       placeholder="password"
                       class="form-control"
@@ -62,7 +63,6 @@
               <div class="d-grid">
                 <button class="btn btn-dark">Login</button>
               </div>
-
             </form>
 
             <div class="d-flex justify-content-center align-items-center mt-4">
@@ -95,24 +95,23 @@ export default {
     };
   },
   methods: {
-     async login() {
+    async login() {
       try {
         const res = await Service.login(this.form);
         if (typeof Storage !== "undefined") {
           sessionStorage.setItem("token", res.data.token);
-          sessionStorage.setItem("user",JSON.stringify(res.data.userobj));
+          sessionStorage.setItem("user", JSON.stringify(res.data.userobj));
         } else throw new Error("Session Storage Disabled");
-        this.$router.push({path : "/user/dashboard"})
+        this.$router.push({ path: "/auth/dashboard" });
       } catch (error) {
         console.log(error);
-        sessionStorage.clear()
+        sessionStorage.clear();
         this.error = error.response.data.message; //"Invalid Login Credentials"
       }
     },
-    goSignup(){
-       this.$router.push({path : "/signup"})
-
-    }
+    goSignup() {
+      this.$router.push({ path: "/signup" });
+    },
   },
 };
 </script>

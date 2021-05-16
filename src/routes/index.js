@@ -6,6 +6,8 @@ import TreatedComplaints from "@/views/TreatedComplaints.vue";
 import Navigation from '@/views/Navigation.vue';
 import SignUp from '@/views/SignUp.vue';
 import Login from '@/views/Login.vue';
+import ViewUsers from '@/views/ViewUsers.vue';
+import NewUsers from '@/views/NewUsers.vue'
 
 let user_ ;
 let token;
@@ -28,10 +30,10 @@ const routes = [
         }
     },
     {
-        path: "/user",
+        path: "/auth",
         name: "nav",
         component: Navigation,
-        redirect: { name: 'login' },
+        redirect: { name: 'dashboard' },
         children: [
  
             {
@@ -86,7 +88,35 @@ const routes = [
                     else next()
                     // ...
                   }
-            }
+            },
+            {
+                path: "users",
+                name: "users",
+                component: ViewUsers,
+                meta: { requiresAuth: true, userType: 'admin' },
+                beforeEnter: (to, from, next) => {
+                    if (user_ == undefined  && token== undefined){
+                        next({ name: 'login' })
+                    }
+                    else next()
+                    // ...
+                  }
+            },
+            {
+                path: "users/new",
+                name: "newusers",
+                component: NewUsers,
+                meta: { requiresAuth: true, userType: 'admin' },
+                beforeEnter: (to, from, next) => {
+                    if (user_ == undefined  && token== undefined){
+                        next({ name: 'login' })
+                    }
+                    else next()
+                    // ...
+                  }
+            },
+
+
 
         ]
     },
@@ -94,7 +124,7 @@ const routes = [
 ];
 
 const router = createRouter({
-    history: createWebHistory(''),
+    history: createWebHistory(),
     routes,
 });
 

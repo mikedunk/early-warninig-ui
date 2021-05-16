@@ -1,84 +1,159 @@
 <template>
-    <!-- <div style="position:relative" v-bind:class="{'open':openSuggestion}">
-    <input class="form-control" type="text" v-model="selection"
-        @keydown.enter = 'enter'
-        @keydown.down = 'down'
-        @keydown.up = 'up'
-        @input = 'change'
+  <!-- <div id="app">
+  <autocomplete :items="[ 'Apple', 'Banana', 'Orange', 'Mango', 'Pear', 'Peach', 'Grape', 'Tangerine', 'Pineapple']" />
+
+</div> -->
+  <div class="autocomplete">
+    <input
+      type="text"
+      @input="onChange"
+      v-model="search"
+      @keyup.down="onArrowDown"
+      @keyup.up="onArrowUp"
+      @keyup.enter="onEnter"
     />
-    <ul class="dropdown-menu" style="width:100%">
-        <li v-for="(suggestion, index) in matches"
-            v-bind:class="{'active': isActive($index)}"
-            @click="suggestionClick($index)"
-            :key="index"
-        >
-            <a href="#">{{ suggestion }}</a>
-        </li>
+    <ul id="autocomplete-results" v-show="isOpen" class="autocomplete-results">
+      <li class="loading" v-if="isLoading">Loading results...</li>
+      <li
+        v-else
+        v-for="(result, i) in results"
+        :key="i"
+        @click="setResult(result)"
+        class="autocomplete-result"
+        :class="{ 'is-active': i === arrowCounter }"
+      >
+        {{ result }}
+      </li>
     </ul>
-</div> 
+  </div>
 </template>
-
-
-
-
 
 <script>
 export default {
-    data() {
-        return {
-            open: false,
-            current: 0
-        }
+  name: "autocomplete",
+  emits:['input'],
+  props: {
+    items: {
+      type: Array,
+      required: false,
+      default: [],
     },
-    props: {
-        suggestions: {
-            type: Array,
-            required: true
-        },
-        selection: {
-            type: String,
-            required: true,
-            twoWay: true
-        }
+    isAsync: {
+      type: Boolean,
+      required: false,
+      default: false,
     },
-    computed: {
-        matches() {
-            return this.suggestions.filter((str) => {
-                return str.indexOf(this.selection) >= 0;
-            });
-        },
-        openSuggestion() {
-            return this.selection !== "" &&
-                   this.matches.length != 0 &&
-                   this.open === true;
-        }
+  },
+
+  data() {
+    return {
+      isOpen: false,
+      results: [],
+      search: "",
+      isLoading: false,
+      arrowCounter: 0,
+    };
+  },
+
+  methods: {
+    onChange() {
+      // Let's warn the parent that a change was made
+      this.$emit("input", this.search);
+
+      // Is the data given by an outside ajax request?
+      if (this.isAsync) {
+        this.isLoading = true;
+      } else {
+        // Let's search our flat array
+        this.filterResults();
+        this.isOpen = true;
+      }
     },
-    methods: {
-        enter() {
-            this.selection = this.matches[this.current];
-            this.open = false;
-        },
-        up() {
-            if(this.current > 0)
-                this.current--;
-        },
-        down() {
-            if(this.current < this.matches.length - 1)
-                this.current++;
-        },
-        isActive(index) {
-            return index === this.current;
-        },
-        change() {
-            if (this.open == false) {
-                this.open = true;
-                this.current = 0;
-            }
-        },
-        suggestionClick(index) {
-            this.selection = this.matches[index];
-            this.open = false;
-        },
-    }
+
+    filterResults() {
+      // first uncapitalize all the things
+      this.results = this.items.filter((item) => {
+        return item.toLowerCase().indexOf(this.search.toLowerCase()) > -1;
+      });
+    },
+    setResult(result) {
+      this.search = result;
+      this.isOpen = false;
+    },
+    onArrowDown(evt) {
+      if (this.arrowCounter < this.results.length) {
+        this.arrowCounter = this.arrowCounter + 1;
+      }
+    },
+    onArrowUp() {
+      if (this.arrowCounter > 0) {
+        this.arrowCounter = this.arrowCounter - 1;
+      }
+    },
+    onEnter() {
+      this.search = this.results[this.arrowCounter];
+      this.isOpen = false;
+      this.arrowCounter = -1;
+    },
+    handleClickOutside(evt) {
+      if (!this.$el.contains(evt.target)) {
+        this.isOpen = false;
+        this.arrowCounter = -1;
+      }
+    },
+  },
+  watch: {
+    items: function (val, oldValue) {
+      // actually compare them
+      if (val.length !== oldValue.length) {
+        this.results = val;
+        this.isLoading = false;
+      }
+    },
+  },
+  mounted() {
+    document.addEventListener("click", this.handleClickOutside);
+  },
+  destroyed() {
+    document.removeEventListener("click", this.handleClickOutside);
+  },
+};
+</script>
+
+<style scoped>
+#app {
+  font-family: "Avenir", Helvetica, Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  color: #2c3e50;
+  margin-top: 60px;
 }
-</script> -->
+
+.autocomplete {
+  position: relative;
+  width: 130px;
+}
+
+.autocomplete-results {
+  padding: 0;
+  margin: 0;
+  border: 1px solid #eeeeee;
+  height: 120px;
+  overflow: auto;
+  width: 100%;
+}
+
+.autocomplete-result {
+  list-style: none;
+  text-align: left;
+  padding: 4px 2px;
+  cursor: pointer;
+}
+
+.autocomplete-result.is-active,
+.autocomplete-result:hover {
+  background-color: #4aae9b;
+  color: white;
+}
+
+</style>

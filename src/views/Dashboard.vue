@@ -13,7 +13,7 @@
                 class="col text-right"
               >
                 <router-link
-                  to="/user/pendingcomplaints"
+                  to="/auth/pendingcomplaints"
                   class="btn btn-sm btn-secondary"
                   >See all</router-link
                 >

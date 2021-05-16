@@ -101,21 +101,66 @@ export default {
 
         return Axios.get('user/caregivers', { headers: head })
     },
+
+    getAuthRoles() {
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.get('user/auth/usertypes', { headers: head })
+
+    },
+
+    getAllUsers(parameters) {
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.get('user/all', { headers: head, params: parameters })
+
+    },
+
+    backOfficeSignUp(body) {
+
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.post('user/backofficesignup', body, { headers: head })
+
+    },
+    deactivateUser(usercode) {
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.get(`user/deactivate/${usercode}`, { headers: head })
+
+    },
+
+    activateUser(usercode) {
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.get(`user/activate/${usercode}`, { headers: head })
+
+    },
+    resetUserPassword(usercode) {
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.get(`user/pwdreset/${usercode}`, { headers: head })
+
+    },
+
+
+
+
 }
 
 
 Axios.interceptors.response.use(function (response) {
-    if (401 == response.status){
-        router.push({path : "/"})
+    if (401 == response.status) {
+        router.push({ path: "/" })
     }
     // Any status code that lie within the range of 2xx cause this function to trigger
     // Do something with response data
     return response;
-  }, function (error) {
-      if (401 == error.response.status){
-        router.push({path : "/"})
-      }
+}, function (error) {
+    if (401 == error.response.status) {
+        router.push({ path: "/" })
+    }
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     return Promise.reject(error);
-  });
+});
