@@ -69,7 +69,7 @@
               </router-link>
             </li>
           </div>
-          <div>
+          <div v-if="false"> 
             <li class="nav-item">
               <span
                 class="nav-link d-flex justify-content-between align-items-center"

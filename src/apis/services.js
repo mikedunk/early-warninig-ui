@@ -109,10 +109,10 @@ export default {
 
     },
 
-    getAllUsers(parameters){
+    getAllUsers(parameters) {
         token = sessionStorage.token;
         const head = { "auth-token": token }
-        return Axios.get('user/all', { headers: head , params: parameters})
+        return Axios.get('user/all', { headers: head, params: parameters })
 
     },
 
@@ -122,7 +122,28 @@ export default {
         const head = { "auth-token": token }
         return Axios.post('user/backofficesignup', body, { headers: head })
 
-    }
+    },
+    deactivateUser(usercode) {
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.get(`user/deactivate/${usercode}`, { headers: head })
+
+    },
+
+    activateUser(usercode) {
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.get(`user/activate/${usercode}`, { headers: head })
+
+    },
+    resetUserPassword(usercode) {
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.get(`user/pwdreset/${usercode}`, { headers: head })
+
+    },
+
+
 
 
 }

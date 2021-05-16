@@ -21,32 +21,84 @@
       <div class="btn-group">
         <button
           class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
+          aria-haspopup="true"
+          aria-expanded="false"
           @click="showOptions()"
         >
           <span class="icon icon-sm pt-1"
             ><span class="fas fa-ellipsis-h icon-dark"></span> </span
           ><span class="sr-only">Toggle Dropdown</span>
         </button>
-        <div class="dropdown-menu" :class="{ show: showFor }">
-          <a class="dropdown-item rounded-top" href="#"
-            ><span class="fas fa-user-shield me-2"></span> Reset Pass</a
+        <div class="dropdown-menu py-0" :class="{ show: showFor }">
+          <button class="dropdown-item rounded-top" @click="resetPassword()">
+            <span class="fas fa-user-shield me-2"></span> Reset Password
+          </button>
+          <button class="dropdown-item" @click="showGModal()">
+            <span class="fas fa-eye me-2"></span>View Details
+          </button>
+          <button
+            v-if="user.is_active === true"
+            class="dropdown-item text-danger rounded-bottom"
+            @click="changeUserStatus()"
           >
-          <a class="dropdown-item" href="#"
-            ><span class="fas fa-eye me-2"></span>View Details</a
+            <span class="fas fa-user-times me-2"></span>{{ checkStatus() }}
+          </button>
+          <button
+            v-if="user.is_active === false"
+            class="dropdown-item text-success rounded-bottom"
+            @click="changeUserStatus()"
           >
-          <a class="dropdown-item text-danger rounded-bottom" href="#"
-            ><span class="fas fa-user-times me-2"></span>Suspend</a
-          >
+            <span class="fas fa-user-plus me-2"></span>{{ checkStatus() }}
+          </button>
         </div>
       </div>
     </td>
   </tr>
+  <UserDetailsModal
+    :visible="showUserModal"
+    :title="'User Details'"
+    :okButtonText="'Ok'"
+    @closeUserModal="closeGModal"
+  >
+    <template v-slot:body>
+      <h2 class="h5 mb-4">User Details</h2>
+      <div>
+        <!-- <h2 class="small mb-1">Email</h2> -->
+        <p class="h5 pe-4">
+          <b>{{ user.email }} </b>
+        </p>
+      </div>
+      <div>
+        <!-- <h2 class="small mb-1">Name</h2> -->
+        <p class="h5 pe-4">
+          <b>{{ user.first_name }} {{ user.last_name }}</b>
+        </p>
+      </div>
+      <div>
+        <!-- <h2 class="small mb-1">Role</h2> -->
+        <p class="h5 pe-4">
+          <b>{{ user.Role.description }}</b>
+        </p>
+      </div>
+      <div>
+        <!-- <h2 class="small mb-1">Role</h2> -->
+        <p class="h5 pe-4">
+          <b :class="textGuru(user.is_active)"> {{ status(user.is_active) }}</b>
+        </p>
+      </div>
+    </template>
+  </UserDetailsModal>
 </template>
 
 <script>
+import Service from "@/apis/services";
+import UserDetailsModal from "./UserDetailsModal.vue";
 export default {
+  components: {
+    UserDetailsModal,
+  },
   name: "ListItem",
-  emits: ["action"],
+  emits: ["randomuser","action"],
   props: {
     user: {
       type: Object,
@@ -56,10 +108,16 @@ export default {
       type: Number,
       required: true,
     },
+    active: {
+      type: Boolean,
+      required: false,
+    },
   },
   data() {
     return {
       showFor: false,
+      open: false,
+      showUserModal: false,
     };
   },
 
@@ -67,9 +125,9 @@ export default {
     showOptions() {
       this.showFor = !this.showFor;
     },
-    showGModal(item) {
-      this.randomUser = item;
+    showGModal() {
       this.showUserModal = true;
+      this.$emit("randomuser", this.user);
     },
     closeGModal() {
       this.showUserModal = false;
@@ -79,6 +137,7 @@ export default {
       else if (text == false) return "text-danger";
       else "text-primary";
     },
+
     status(stat) {
       if (stat == true) {
         return "Active";
@@ -96,6 +155,35 @@ export default {
     handleModalClose() {
       this.form.complaint = [];
       this.$emit("action");
+    },
+    async resetPassword() {
+      try {
+        const code = this.user.code;
+        await Service.resetUserPassword(code);
+      } catch (error) {
+        console.log(error);
+      }
+    },
+
+    async changeUserStatus() {
+      const code = this.user.code;
+      try {
+        if (this.user.is_active === true) {
+          await Service.resetUserPassword(code);
+        }
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    checkStatus() {
+      if (this.user.is_active === false) {
+        return "Activate";
+      } else return "Deactivate";
+    },
+    userStatus() {
+      if (this.user.is_active === false) {
+        return "Active";
+      } else return "Inactive";
     },
   },
 };

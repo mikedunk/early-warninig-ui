@@ -19,7 +19,7 @@
           ></button>
         </div>
 
-        <div class="modal-body">
+        <div class="modal-body" v-if="!turnOnScanner">
           <form @submit.prevent="lodge">
             <p class="text-center">
               If you have identified a change while caring for or observing a
@@ -55,15 +55,20 @@
               <div>
                 <div>
                   <label for="resident_name">Resident's Name</label>
-                  <input
-                    class="form-control"
-                    id="resident_name"
-                    type="text"
-                    placeholder="Enter resident's name"
-                    required
-                    v-model="form.resident_name"
-                    @click="error = null"
-                  />
+                  <div class="input-group">
+                    <button class="input-group-text" @click="toggleScanner">
+                      <span class="fa fa-camera"></span>
+                    </button>
+                    <input
+                      class="form-control"
+                      id="resident_name"
+                      type="text"
+                      placeholder="Enter resident's name"
+                      required
+                      v-model="form.resident_name"
+                      @click="error = null"
+                    />
+                  </div>
                 </div>
                 <div>
                   <p></p>
@@ -98,7 +103,7 @@
             {{ error }}
           </div>
         </div>
-        <div class="modal-footer">
+        <div class="modal-footer" v-if="!turnOnScanner">
           <button
             type="button"
             class="btn btn-secondary"
@@ -124,6 +129,7 @@
     
     /> -->
     <StreamBarcodeReader
+      v-if="turnOnScanner"
       @decode="onDecode"
       @loaded="onLoaded"
     ></StreamBarcodeReader>
@@ -136,7 +142,7 @@
 
 <script>
 import bootstrap from "bootstrap/dist/js/bootstrap";
-import { StreamBarcodeReader } from "vue-barcode-reader";
+import  StreamBarcodeReader from './StreamBarcodeReader.vue';
 import Service from "@/apis/services";
 //import SearchAutocomplete from "./SearchAutocomplete.vue";
 
@@ -168,6 +174,7 @@ export default {
       error: "",
       nurses: [],
       value: "",
+      turnOnScanner: false,
     };
   },
   mounted() {
@@ -184,6 +191,9 @@ export default {
   },
 
   methods: {
+    toggleScanner(){
+      this.turnOnScanner = !this.turnOnScanner
+    },
     async displayModal() {
       if (this.visible) {
         this.modal.show();
@@ -191,10 +201,12 @@ export default {
     },
     hideModal() {
       this.modal.hide();
+        this.turnOnScanner=false
     },
     handleModalClose() {
       this.form.complaint = [];
       this.$emit("close");
+      this.turnOnScanner=false
     },
     async lodge() {
       try {
@@ -217,13 +229,14 @@ export default {
     },
     onDecode(result) {
       console.log(result);
+      this.form.resident_name=result
+        this.turnOnScanner=false
     },
     onError(result) {
       console.log(result);
+        this.turnOnScanner=false
     },
-    onLoaded(){
-      
-    }
+    onLoaded() {},
   },
 
   updated() {

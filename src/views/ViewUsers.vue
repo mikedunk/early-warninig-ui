@@ -48,13 +48,74 @@
         </thead>
         <tbody class="table-hover">
           <!-- Item -->
-          <ListItem
+          <!-- <ListItem
             v-for="(user, index) in allUsers"
             :key="index"
             :user="user"
             :ind="index"
             @action="doNoth"
-          />
+            @randomuser="getRandomUser"
+          /> -->
+          <tr v-for="(user, index) in allUsers" :key="index">
+            <td class="fw-bold">
+              {{ user.first_name.charAt(0).toUpperCase()
+              }}{{ user.first_name.substring(1) }}
+            </td>
+            <td class="fw-normal">
+              {{ user.last_name.charAt(0).toUpperCase()
+              }}{{ user.last_name.substring(1) }}
+            </td>
+            <td class="fw-normal">
+              {{ user.email }}
+            </td>
+            <td class="fw-normal" :class="roleGuru(user.Role.name)">
+              {{ user.Role.description }}
+            </td>
+            <td class="fw-normal" :class="textGuru(user.is_active)">
+              {{ status(user.is_active) }}
+            </td>
+            <td>
+              <div class="btn-group">
+                <button
+                  class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
+                  aria-haspopup="true"
+                  aria-expanded="false"
+                  @click="showOptions(index)"
+                >
+                  <span class="icon icon-sm pt-1"
+                    ><span class="fas fa-ellipsis-h icon-dark"></span> </span
+                  ><span class="sr-only">Toggle Dropdown</span>
+                </button>
+                <div class="dropdown-menu py-0" :class="{ show: showFor }">
+                  <button
+                    class="dropdown-item rounded-top"
+                    @click="resetPassword()"
+                  >
+                    <span class="fas fa-user-shield me-2"></span> Reset Password
+                  </button>
+                  <button class="dropdown-item" @click="showGModal(user)">
+                    <span class="fas fa-eye me-2"></span>View Details
+                  </button>
+                  <button
+                    v-if="user.is_active === true"
+                    class="dropdown-item text-danger rounded-bottom"
+                    @click="changeUserStatus()"
+                  >
+                    <span class="fas fa-user-times me-2"></span
+                    >{{ checkStatus() }}
+                  </button>
+                  <button
+                    v-if="user.is_active === false"
+                    class="dropdown-item text-success rounded-bottom"
+                    @click="changeUserStatus()"
+                  >
+                    <span class="fas fa-user-plus me-2"></span
+                    >{{ checkStatus() }}
+                  </button>
+                </div>
+              </div>
+            </td>
+          </tr>
         </tbody>
       </table>
       <div
@@ -102,13 +163,12 @@
 import Service from "@/apis/services";
 import UserModal from "../components/UserModal.vue";
 import Pagination from "../components/Pagination.vue";
-import ListItem from "../components/ListItem.vue";
+//import ListItem from "../components/ListItem.vue";
 
 export default {
   components: {
     Pagination,
     UserModal,
-    ListItem,
   },
   data() {
     return {
@@ -118,21 +178,8 @@ export default {
       numberOfItems: 10,
       pageCount: 1,
       showUserModal: false,
-      randomUser: {
-        code: "833afb64-2c26-4e36-ac5e-22aec55597cd",
-        username: "michaelayeyemimikedunk01@gmail.com",
-        email: "mikedunk01@gmail.com",
-        phone_number: null,
-        first_name: "michael",
-        last_name: "ayeyemi",
-        is_active: true,
-        reset_password: true,
-        Role: {
-          id: 2,
-          name: "nurse",
-          description: "Nurse",
-        },
-      },
+      randomUser: {},
+
       form: {},
       modalErrorDiv: null,
       showFor: false,
@@ -168,7 +215,9 @@ export default {
         console.log(error);
       }
     },
-
+    getRandomUser(rand) {
+      this.randomUser = rand;
+    },
     doNoth() {
       console.log("fdxgc hvh");
     },
@@ -215,10 +264,11 @@ export default {
     closeGModal() {
       this.showUserModal = false;
     },
-    // showOptions(user) {
-    //   this.showFor = !this.showFor;
-    //   this.randomUser = user;
-    // },
+    showOptions(index) {
+      console.log(index)
+      this.showFor = !this.showFor;
+
+    },
 
     findSelection(role) {
       this.randomRole = role;
@@ -235,6 +285,16 @@ export default {
         return;
       }
       this.getAllUsers({ role: this.randomRole, search: this.searchterm });
+    },
+    checkStatus() {
+      if (this.randomUser.is_active === false) {
+        return "Activate";
+      } else return "Deactivate";
+    },
+    userStatus() {
+      if (this.randomUser.is_active === false) {
+        return "Active";
+      } else return "Inactive";
     },
   },
 };
