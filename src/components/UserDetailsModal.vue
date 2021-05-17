@@ -48,6 +48,10 @@ export default {
       type: Boolean,
       required: true,
     },
+    deet: {
+      type: Object,
+      required: true,
+    },
     title: {
       type: String,
       default: "Modal Title",

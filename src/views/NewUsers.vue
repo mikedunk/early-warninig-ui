@@ -29,7 +29,7 @@
                       aria-describedby="emailHelp"
                       v-model="form.email"
                       @click="error = null"
-                      @keyup="emailValid"
+                      @keyup="emailValid()"
                     />
                   </div>
                   <div class="mb-3">
@@ -184,6 +184,9 @@ export default {
         if (newuser.data.success === true) {
           this.createSuccess = true;
         }
+        this.closeGModal()
+        this.$router.push({ path: "/auth/users" });
+
       } catch (error) {
         console.log(error.response.data.error);
         this.error = error.response.data.error;

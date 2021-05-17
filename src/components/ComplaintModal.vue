@@ -60,6 +60,7 @@
                       <span class="fa fa-camera"></span>
                     </button>
                     <input
+                      ref="res_name"
                       class="form-control"
                       id="resident_name"
                       type="text"
@@ -142,7 +143,7 @@
 
 <script>
 import bootstrap from "bootstrap/dist/js/bootstrap";
-import  StreamBarcodeReader from './StreamBarcodeReader.vue';
+import StreamBarcodeReader from "./StreamBarcodeReader.vue";
 import Service from "@/apis/services";
 //import SearchAutocomplete from "./SearchAutocomplete.vue";
 
@@ -175,6 +176,9 @@ export default {
       nurses: [],
       value: "",
       turnOnScanner: false,
+      shouldFocus: false,
+      restag: null,
+      modal: null,
     };
   },
   mounted() {
@@ -191,8 +195,8 @@ export default {
   },
 
   methods: {
-    toggleScanner(){
-      this.turnOnScanner = !this.turnOnScanner
+    toggleScanner() {
+      this.turnOnScanner = !this.turnOnScanner;
     },
     async displayModal() {
       if (this.visible) {
@@ -201,12 +205,12 @@ export default {
     },
     hideModal() {
       this.modal.hide();
-        this.turnOnScanner=false
+      this.turnOnScanner = false;
     },
     handleModalClose() {
       this.form.complaint = [];
       this.$emit("close");
-      this.turnOnScanner=false
+      this.turnOnScanner = false;
     },
     async lodge() {
       try {
@@ -228,15 +232,22 @@ export default {
       }
     },
     onDecode(result) {
-      console.log(result);
-      this.form.resident_name=result
-        this.turnOnScanner=false
+      this.turnOnScanner = false;
+      this.form.resident_name = result;
+      this.shouldFocus = true;
+      this.randomfunc();
     },
     onError(result) {
       console.log(result);
-        this.turnOnScanner=false
+      this.turnOnScanner = false;
     },
     onLoaded() {},
+
+    randomfunc() {
+      // const resname = document.getElementById("resident_name");
+      // resname.scrollIntoView();
+      this.$refs.res_name.focus();
+    },
   },
 
   updated() {

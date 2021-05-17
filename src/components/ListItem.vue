@@ -58,6 +58,7 @@
     :visible="showUserModal"
     :title="'User Details'"
     :okButtonText="'Ok'"
+    :deet="user"
     @closeUserModal="closeGModal"
   >
     <template v-slot:body>
