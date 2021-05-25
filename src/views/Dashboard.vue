@@ -270,7 +270,7 @@ export default {
       showGenericModal: false,
       randomItem: {},
       form: {},
-      modalErrorDiv: null
+      modalErrorDiv: null,
     };
   },
   created() {
@@ -291,7 +291,9 @@ export default {
         this.numberOfItems = res.data.complaints.numberOfItems;
         this.pageCount = res.data.complaints.numberOfPages;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
 
@@ -300,20 +302,22 @@ export default {
         const count = await Service.getTreatedCount();
         this.treatedCount = count.data.numberOfTreatedComplaints;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
     async respondToComplaint() {
       try {
-        this.form.id = this.randomItem.id
+        this.form.id = this.randomItem.id;
         await Service.respondToComplaints(this.form);
-        this.form={}
+        this.form = {};
         this.closeGModal();
-        this.getAllPendingComplaints()
-
+        this.getAllPendingComplaints();
       } catch (error) {
-        this.modalErrorDiv = error.response.data.message
-        console.log(error);
+        if (error.response) {
+          this.modalErrorDiv = error.response.data.message;
+        } else this.modalErrorDiv = error.message;
       }
     },
 
@@ -340,9 +344,8 @@ export default {
       this.showGenericModal = true;
     },
     closeGModal() {
-      this.showGenericModal = false;    
-    }
-
+      this.showGenericModal = false;
+    },
   },
 };
 

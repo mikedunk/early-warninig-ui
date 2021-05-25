@@ -43,7 +43,7 @@
                       ><span class="fas fa-unlock-alt"></span
                     ></span>
                     <input
-                      autocomplete="password" 
+                      autocomplete="password"
                       type="password"
                       placeholder="password"
                       class="form-control"
@@ -61,12 +61,27 @@
                 <!-- End of Form -->
               </div>
               <div class="d-grid">
-                <button class="btn btn-dark">Login</button>
+                <button class="btn btn-dark">
+                  <div v-if="!loading">Login</div>
+                  <div v-if="loading">
+                    <i class="fas fa-spinner fa-pulse"></i>
+                  </div>
+                </button>
               </div>
             </form>
+            <div class="mb-3"></div>
+            <div
+              class="d-flex justify-content-center align-items-center mt-4n mb-5"
+            >
+              <span class="fw-small">
+                <router-link class="h6" to="/resetpwd">
+                  forgot password?
+                </router-link>
+              </span>
+            </div>
 
             <div class="d-flex justify-content-center align-items-center mt-4">
-              <span class="fw-normal">
+              <span class="h6">
                 Not registered?
                 <router-link class="fw-bold" to="/signup">
                   Create account
@@ -92,21 +107,30 @@ export default {
         password: "",
       },
       error: null,
+      loading:false
     };
   },
   methods: {
     async login() {
+      this.loading=true;
       try {
         const res = await Service.login(this.form);
         if (typeof Storage !== "undefined") {
           sessionStorage.setItem("token", res.data.token);
           sessionStorage.setItem("user", JSON.stringify(res.data.userobj));
         } else throw new Error("Session Storage Disabled");
-        this.$router.push({ path: "/auth/dashboard" });
+        if (res.data.userobj.resetPassword === true) {
+          this.$router.push({ path: "/updatepassword" });
+        } else {
+          this.$router.push({ path: "/auth/dashboard" });
+        }
+         this.loading=false;
       } catch (error) {
-        console.log(error);
+        this.loading=false;
         sessionStorage.clear();
-        this.error = error.response.data.message; //"Invalid Login Credentials"
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
     goSignup() {

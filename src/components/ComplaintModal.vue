@@ -60,8 +60,10 @@
                       <span class="fa fa-camera"></span>
                     </button>
                     <input
+                      ref="res_name"
                       class="form-control"
                       id="resident_name"
+                      :autofocus="shouldFocus"
                       type="text"
                       placeholder="Enter resident's name"
                       required
@@ -142,7 +144,7 @@
 
 <script>
 import bootstrap from "bootstrap/dist/js/bootstrap";
-import  StreamBarcodeReader from './StreamBarcodeReader.vue';
+import StreamBarcodeReader from "./StreamBarcodeReader.vue";
 import Service from "@/apis/services";
 //import SearchAutocomplete from "./SearchAutocomplete.vue";
 
@@ -175,6 +177,9 @@ export default {
       nurses: [],
       value: "",
       turnOnScanner: false,
+      shouldFocus: false,
+      restag: null,
+      modal: null,
     };
   },
   mounted() {
@@ -191,8 +196,8 @@ export default {
   },
 
   methods: {
-    toggleScanner(){
-      this.turnOnScanner = !this.turnOnScanner
+    toggleScanner() {
+      this.turnOnScanner = !this.turnOnScanner;
     },
     async displayModal() {
       if (this.visible) {
@@ -201,12 +206,12 @@ export default {
     },
     hideModal() {
       this.modal.hide();
-        this.turnOnScanner=false
+      this.turnOnScanner = false;
     },
     handleModalClose() {
       this.form.complaint = [];
       this.$emit("close");
-      this.turnOnScanner=false
+      this.turnOnScanner = false;
     },
     async lodge() {
       try {
@@ -215,8 +220,9 @@ export default {
         this.form = {};
         this.handleModalClose();
       } catch (error) {
-        console.log(error.response.data.message);
-        this.error = error.response.data.message;
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
     async getNurses() {
@@ -224,19 +230,20 @@ export default {
         const nurses = await Service.getNurses();
         this.nurses = nurses.data.nurses;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
     onDecode(result) {
-      console.log(result);
-      this.form.resident_name=result
-        this.turnOnScanner=false
+      this.turnOnScanner = false;
+      this.form.resident_name = result;
+      this.shouldFocus = true;
     },
     onError(result) {
       console.log(result);
-        this.turnOnScanner=false
+      this.turnOnScanner = false;
     },
-    onLoaded() {},
   },
 
   updated() {

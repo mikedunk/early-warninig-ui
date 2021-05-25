@@ -136,10 +136,16 @@ export default {
         return Axios.get(`user/activate/${usercode}`, { headers: head })
 
     },
-    resetUserPassword(usercode) {
+    resetUserPassword(body) {
         token = sessionStorage.token;
         const head = { "auth-token": token }
-        return Axios.get(`user/pwdreset/${usercode}`, { headers: head })
+        return Axios.post('user/pwdreset', body, { headers: head })
+
+    },
+    changePassword(body) {
+        token = sessionStorage.token;
+        const head = { "auth-token": token }
+        return Axios.post('user/pwdchange', body, { headers: head })
 
     },
 
@@ -157,9 +163,18 @@ Axios.interceptors.response.use(function (response) {
     // Do something with response data
     return response;
 }, function (error) {
-    if (401 == error.response.status) {
-        router.push({ path: "/" })
+    console.log(error.message)
+    console.log(error)
+
+
+    if (error.response) {
+        if (401 == error.response.status) {
+            router.push({ path: "/" })
+        }
+
     }
+
+
     // Any status codes that falls outside the range of 2xx cause this function to trigger
     // Do something with response error
     return Promise.reject(error);
