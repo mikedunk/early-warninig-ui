@@ -18,21 +18,48 @@
             @click="handleModalClose"
           ></button>
         </div>
-        <div class="modal-body">
-          <slot name="body"> default body </slot>
-        </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" @click="handleSubmit">
-            {{ okButtonText }}
-          </button>
-          <button
-            type="button"
-            class="btn btn-link text-gray ms-auto"
-            @click="handleModalClose"
-          >
-            {{ cancelButtonText }}
-          </button>
-        </div>
+        <slot name="body">
+          <div class="modal-body">
+            <p>
+              Name :
+
+              <b> {{ getFullName() }}</b>
+            </p>
+            <p>
+              Email :
+
+              <b> {{ rand.email }}</b>
+            </p>
+            <p>
+              Role :
+
+              <b class="fw-normal" :class="roleGuru()"> {{ getRole() }}</b>
+            </p>
+            <p>
+              Status :
+
+              <b :class="textGuru(rand.is_active)">
+                {{ status(rand.is_active) }}</b
+              >
+            </p>
+          </div>
+          <div class="modal-footer">
+            <button
+              type="button"
+              class="btn btn-secondary"
+              @click="handleSubmit"
+            >
+              {{ okButtonText }}
+            </button>
+            <button
+              type="button"
+              class="btn btn-link text-gray ms-auto"
+              @click="handleModalClose"
+            >
+              {{ cancelButtonText }}
+            </button>
+          </div>
+        </slot>
       </div>
     </div>
   </div>
@@ -43,7 +70,7 @@
 import bootstrap from "bootstrap/dist/js/bootstrap";
 
 export default {
-  emits: ["closeUserModal", "submitData"],
+  emits: ["closeUserModal"],
   name: "UserModal",
   props: {
     visible: {
@@ -62,27 +89,24 @@ export default {
       type: String,
       default: "Close",
     },
-    rand:{
-        type:Object
-    }
+    rand: {
+      type: Object,
+    },
   },
 
   data() {
-    return {
-      complaints: "",
-    };
+    return {};
   },
   mounted() {
     this.modal = new bootstrap.Modal(document.getElementById("user-modal"), {
       keyboard: false,
-      backdrop:'static'
+      backdrop: "static",
     });
   },
   methods: {
     async displayModal() {
       if (this.visible) {
         this.modal.show();
-     
       }
     },
     hideModal() {
@@ -91,10 +115,60 @@ export default {
     handleModalClose() {
       this.$emit("closeUserModal");
     },
-    handleSubmit(){
-        this.$emit("submitData");
-    }
+    userStatus() {
+      if (this.rand.is_active === false) {
+        return "Active";
+      } else return "Inactive";
+    },
+    textGuru(text) {
+      if (text == true) return "text-success";
+      else if (text == false) return "text-danger";
+      else "text-primary";
+    },
+
+    roleGuru() {
+      if (this.rand.Role == undefined) {
+        return "text-primary";
+      }
+      switch (this.rand.Role.name) {
+        case "admin":
+          return "text-danger";
+        case "nurse":
+          return "text-secondary";
+        case "care_giver":
+          return "text-info";
+
+        default:
+          return "text-primary";
+      }
+    },
+    status(stat) {
+      if (stat == true) {
+        return "Active";
+      } else return "Inactive";
+    },
+    getRole() {
+      if (this.rand.Role == undefined) {
+        return "Role not available";
+      } else return this.rand.Role.description;
+    },
+    getFullName() {
+      if (
+        this.rand.first_name == undefined ||
+        this.rand.last_name == undefined
+      ) {
+        return "Name not available";
+      }
+      return (
+        this.rand.first_name.charAt(0).toUpperCase() +
+        this.rand.first_name.slice(1) +
+        " " +
+        this.rand.last_name.charAt(0).toUpperCase() +
+        this.rand.last_name.slice(1)
+      );
+    },
   },
+
   updated() {
     if (this.visible) {
       this.displayModal();

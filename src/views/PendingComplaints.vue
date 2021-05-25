@@ -184,7 +184,7 @@ export default {
       showGenericModal: false,
       randomItem: {},
       form: {},
-      modalErrorDiv: null
+      modalErrorDiv: null,
     };
   },
   async mounted() {
@@ -201,7 +201,9 @@ export default {
         this.numberOfItems = res.data.complaints.numberOfItems;
         this.pageCount = res.data.complaints.numberOfPages;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
 
@@ -229,7 +231,7 @@ export default {
       this.randomItem = item;
       this.showGenericModal = true;
     },
-     textGuru(text) {
+    textGuru(text) {
       if (text == "pending") return "text-secondary";
       else if (text == "treated") return "text-success";
       else "text-primary";
@@ -239,20 +241,20 @@ export default {
       this.showGenericModal = false;
     },
 
-        async respondToComplaint() {
+    async respondToComplaint() {
       try {
-        this.form.id = this.randomItem.id
+        this.form.id = this.randomItem.id;
         await Service.respondToComplaints(this.form);
-        this.form={}
+        this.form = {};
         this.closeGModal();
-        this.getAllPendingComplaints()
-
+        this.getAllPendingComplaints();
       } catch (error) {
-        this.modalErrorDiv = error.response.data.message
-        console.log(error);
+        this.modalErrorDiv = error.response.data.message;
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
-
   },
 };
 </script>

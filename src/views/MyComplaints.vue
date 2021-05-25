@@ -229,7 +229,9 @@ export default {
         this.numberOfItems = res.data.raised.numberOfItems;
         this.pageCount = res.data.raised.numberOfPages;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
 
@@ -238,7 +240,9 @@ export default {
         const res = await Service.getComplaints();
         this.datacomplaints = res.data;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
 

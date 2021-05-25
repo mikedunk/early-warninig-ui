@@ -155,11 +155,10 @@ import Service from "@/apis/services";
 import Pagination from "../components/Pagination";
 import GenericModal from "../components/GenericModal";
 
-
 export default {
   components: {
     Pagination,
-    GenericModal
+    GenericModal,
   },
   data() {
     return {
@@ -186,7 +185,9 @@ export default {
         this.numberOfItems = res.data.resolved_complaints.numberOfItems;
         this.pageCount = res.data.resolved_complaints.numberOfPages;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
 

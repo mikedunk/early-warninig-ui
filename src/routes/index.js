@@ -7,9 +7,12 @@ import Navigation from '@/views/Navigation.vue';
 import SignUp from '@/views/SignUp.vue';
 import Login from '@/views/Login.vue';
 import ViewUsers from '@/views/ViewUsers.vue';
-import NewUsers from '@/views/NewUsers.vue'
+import NewUsers from '@/views/NewUsers.vue';
+import ChangePassword from '@/views/ChangePassword.vue';
+import ResetPassword from '@/views/ResetPassword.vue';
+import UpdatePassword from '@/views/UpdatePassword.vue';
 
-let user_ ;
+let user_;
 let token;
 
 const routes = [
@@ -17,6 +20,12 @@ const routes = [
         path: "/signup",
         name: "signup",
         component: SignUp,
+        meta: { requiresAuth: false }
+    },
+    {
+        path: "/updatepassword",
+        name: "updatepassword",
+        component: UpdatePassword,
         meta: { requiresAuth: false }
     },
     {
@@ -30,24 +39,30 @@ const routes = [
         }
     },
     {
+        path: "/resetpwd",
+        name: "resetpwd",
+        component: ResetPassword,
+        meta: { requiresAuth: false }
+    },
+    {
         path: "/auth",
         name: "nav",
         component: Navigation,
         redirect: { name: 'dashboard' },
         children: [
- 
+
             {
                 path: "dashboard",
                 name: "Dashboard",
                 component: Dashboard,
                 meta: { requiresAuth: true },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined && token== undefined){
+                    if (user_ == undefined && token == undefined) {
                         next({ name: 'login' })
                     }
                     else next()
                     // ...
-                  }
+                }
             },
             {
                 path: "mycomplaints",
@@ -55,12 +70,12 @@ const routes = [
                 component: MyComplaints,
                 meta: { requiresAuth: true, userType: 'care_giver' },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined  && token== undefined){
+                    if (user_ == undefined && token == undefined) {
                         next({ name: 'login' })
                     }
                     else next()
                     // ...
-                  }
+                }
 
             },
             {
@@ -69,12 +84,12 @@ const routes = [
                 component: PendingComplaints,
                 meta: { requiresAuth: true, userType: 'nurse' },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined  && token== undefined ){
+                    if (user_ == undefined && token == undefined) {
                         next({ name: 'login' })
                     }
                     else next()
                     // ...
-                  }
+                }
             },
             {
                 path: "treatedcomplaints",
@@ -82,12 +97,12 @@ const routes = [
                 component: TreatedComplaints,
                 meta: { requiresAuth: true, userType: 'nurse' },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined  && token== undefined){
+                    if (user_ == undefined && token == undefined) {
                         next({ name: 'login' })
                     }
                     else next()
                     // ...
-                  }
+                }
             },
             {
                 path: "users",
@@ -95,12 +110,12 @@ const routes = [
                 component: ViewUsers,
                 meta: { requiresAuth: true, userType: 'admin' },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined  && token== undefined){
+                    if (user_ == undefined && token == undefined) {
                         next({ name: 'login' })
                     }
                     else next()
                     // ...
-                  }
+                }
             },
             {
                 path: "users/new",
@@ -108,12 +123,26 @@ const routes = [
                 component: NewUsers,
                 meta: { requiresAuth: true, userType: 'admin' },
                 beforeEnter: (to, from, next) => {
-                    if (user_ == undefined  && token== undefined){
+                    if (user_ == undefined && token == undefined) {
                         next({ name: 'login' })
                     }
                     else next()
                     // ...
-                  }
+                }
+            },
+            {
+                path: "changepassword",
+                name: "changepassword",
+                component: ChangePassword,
+                meta: { requiresAuth: true},
+                beforeEnter: (to, from, next) => {
+                    if (user_ == undefined && token == undefined) {
+                        next({ name: 'login' })
+                    }
+                    else next()
+                    // ...
+                }
+
             },
 
 
@@ -132,8 +161,8 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
 
-     user_ = sessionStorage.user
-     token = sessionStorage.token
+    user_ = sessionStorage.user
+    token = sessionStorage.token
     next()
 
 });

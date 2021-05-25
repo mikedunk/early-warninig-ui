@@ -63,6 +63,7 @@
                       ref="res_name"
                       class="form-control"
                       id="resident_name"
+                      :autofocus="shouldFocus"
                       type="text"
                       placeholder="Enter resident's name"
                       required
@@ -219,8 +220,9 @@ export default {
         this.form = {};
         this.handleModalClose();
       } catch (error) {
-        console.log(error.response.data.message);
-        this.error = error.response.data.message;
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
     async getNurses() {
@@ -228,25 +230,19 @@ export default {
         const nurses = await Service.getNurses();
         this.nurses = nurses.data.nurses;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
     onDecode(result) {
       this.turnOnScanner = false;
       this.form.resident_name = result;
       this.shouldFocus = true;
-      this.randomfunc();
     },
     onError(result) {
       console.log(result);
       this.turnOnScanner = false;
-    },
-    onLoaded() {},
-
-    randomfunc() {
-      // const resname = document.getElementById("resident_name");
-      // resname.scrollIntoView();
-      this.$refs.res_name.focus();
     },
   },
 

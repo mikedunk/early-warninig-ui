@@ -47,7 +47,7 @@
                       ><span class="fas fa-unlock-alt"></span
                     ></span>
                     <input
-                     autocomplete="new_password" 
+                      autocomplete="new_password"
                       type="password"
                       placeholder="Password"
                       class="form-control"
@@ -77,7 +77,7 @@
                       ><span class="fas fa-unlock-alt"></span
                     ></span>
                     <input
-                     autocomplete="new_password" 
+                      autocomplete="new_password"
                       type="password"
                       placeholder="Confirm Password"
                       class="form-control"
@@ -210,7 +210,9 @@ export default {
         const roles = await Service.getRoles();
         this.usertypes = roles.data.user_types;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
 
@@ -230,9 +232,10 @@ export default {
           this.$router.push({ path: "/auth/dashboard" });
         }
       } catch (error) {
-        this.error = error.response.data.message;
         sessionStorage.clear();
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
   },

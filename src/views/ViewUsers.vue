@@ -51,71 +51,11 @@
             <ListItem
               :user="one"
               :ind="index"
-              @action="doNoth"
-              @randomuser="getRandomUser"
+              @showMod="showGModal"
+              @showCModal="showCoModal"
+              @thisuser="setRandomUser"
             />
           </template>
-
-          <!-- <tr v-for="(user, index) in allUsers" :key="index">
-            <td class="fw-bold">
-              {{ user.first_name.charAt(0).toUpperCase()
-              }}{{ user.first_name.substring(1) }}
-            </td>
-            <td class="fw-normal">
-              {{ user.last_name.charAt(0).toUpperCase()
-              }}{{ user.last_name.substring(1) }}
-            </td>
-            <td class="fw-normal">
-              {{ user.email }}
-            </td>
-            <td class="fw-normal" :class="roleGuru(user.Role.name)">
-              {{ user.Role.description }}
-            </td>
-            <td class="fw-normal" :class="textGuru(user.is_active)">
-              {{ status(user.is_active) }}
-            </td>
-            <td>
-              <div class="btn-group">
-                <button
-                  class="btn btn-link text-dark dropdown-toggle dropdown-toggle-split m-0 p-0"
-                  aria-haspopup="true"
-                  aria-expanded="false"
-                  @click="showOptions(index)"
-                >
-                  <span class="icon icon-sm pt-1"
-                    ><span class="fas fa-ellipsis-h icon-dark"></span> </span
-                  ><span class="sr-only">Toggle Dropdown</span>
-                </button>
-                <div class="dropdown-menu py-0" :class="{ show: showFor }">
-                  <button
-                    class="dropdown-item rounded-top"
-                    @click="resetPassword()"
-                  >
-                    <span class="fas fa-user-shield me-2"></span> Reset Password
-                  </button>
-                  <button class="dropdown-item" @click="showGModal(user)">
-                    <span class="fas fa-eye me-2"></span>View Details
-                  </button>
-                  <button
-                    v-if="user.is_active === true"
-                    class="dropdown-item text-danger rounded-bottom"
-                    @click="changeUserStatus()"
-                  >
-                    <span class="fas fa-user-times me-2"></span
-                    >{{ checkStatus() }}
-                  </button>
-                  <button
-                    v-if="user.is_active === false"
-                    class="dropdown-item text-success rounded-bottom"
-                    @click="changeUserStatus()"
-                  >
-                    <span class="fas fa-user-plus me-2"></span
-                    >{{ checkStatus() }}
-                  </button>
-                </div>
-              </div>
-            </td>
-          </tr> -->
         </tbody>
       </table>
       <div
@@ -135,17 +75,6 @@
       </div>
     </div>
 
-    <UserModal
-      :visible="showUserModal"
-      :title="'Pending Complaints'"
-      :rand="randomUser"
-      :okButtonText="'Respsond'"
-      @closeGenericModal="closeGModal"
-      @submitData="doNoth"
-    >
-      <template v-slot:body> </template>
-    </UserModal>
-
     <div
       class="card theme-settings theme-settings-expand"
       id="theme-settings-expand"
@@ -157,6 +86,24 @@
       </div>
     </div>
   </main>
+  <UserModal
+    :visible="showUserModal"
+    :title="'User Details'"
+    :rand="randomUser"
+    @closeUserModal="closeModal"
+  >
+  </UserModal>
+
+  <ConfirmModal
+    :visible="showConfirmModal"
+    :title="'Confirm'"
+    :rand="randomUser"
+    :action="buttonAction"
+    @closeConfirmModal="closeCModal"
+    @ok="okSignalReceived"
+  >
+    <!-- <template v-slot:body> -->
+  </ConfirmModal>
 </template>
 
 <script>
@@ -164,12 +111,14 @@ import Service from "@/apis/services";
 import UserModal from "../components/UserModal.vue";
 import Pagination from "../components/Pagination.vue";
 import ListItem from "../components/ListItem.vue";
+import ConfirmModal from "../components/ConfirmModal.vue";
 
 export default {
   components: {
     Pagination,
     UserModal,
     ListItem,
+    ConfirmModal,
   },
   data() {
     return {
@@ -179,14 +128,16 @@ export default {
       numberOfItems: 10,
       pageCount: 1,
       showUserModal: false,
-      randomUser: {},
-
+      showConfirmModal: false,
+      randomUser: [],
       form: {},
       modalErrorDiv: null,
       showFor: false,
       usertypes: [],
       searchterm: "",
       randomRole: null,
+      fullName: null,
+      buttonAction: "act",
     };
   },
   async mounted() {
@@ -205,7 +156,9 @@ export default {
         this.numberOfItems = res.data.all.numberOfItems;
         this.pageCount = res.data.all.numberOfPages;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
     async getRoles() {
@@ -213,14 +166,13 @@ export default {
         const roles = await Service.getAuthRoles();
         this.usertypes = roles.data.user_types;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
-    getRandomUser(rand) {
+    setRandomUser(rand) {
       this.randomUser = rand;
-    },
-    doNoth() {
-      console.log("fdxgc hvh");
     },
 
     async pageChangeHandle(value) {
@@ -238,36 +190,25 @@ export default {
       await this.getAllUsers({ page: this.page, role: this.randomRole });
     },
 
-    showGModal(item) {
-      this.randomUser = item;
+    showGModal() {
       this.showUserModal = true;
     },
-    textGuru(text) {
-      if (text == true) return "text-success";
-      else if (text == false) return "text-danger";
-      else "text-primary";
-    },
-    status(stat) {
-      if (stat == true) {
-        return "Active";
-      } else return "Inactive";
-    },
-    roleGuru(role) {
-      if (role == "admin") {
-        return "text-danger";
-      } else if (role == "nurse") {
-        return "text-secondary";
-      } else if (role == "care_giver") {
-        return "text-info";
-      } else return "text-primary";
+    showCoModal(action) {
+      console.log(action);
+      this.buttonAction = action;
+      this.showConfirmModal = true;
     },
 
-    closeGModal() {
+    closeCModal() {
+      this.showConfirmModal = false;
+    },
+
+    closeModal() {
       this.showUserModal = false;
     },
-    showOptions(index) {
-      console.log(index);
-      this.showFor = !this.showFor;
+
+    okSignalReceived() {
+      this.getAllUsers({ role: this.randomRole, search: this.searchterm });
     },
 
     findSelection(role) {
@@ -286,16 +227,7 @@ export default {
       }
       this.getAllUsers({ role: this.randomRole, search: this.searchterm });
     },
-    checkStatus() {
-      if (this.randomUser.is_active === false) {
-        return "Activate";
-      } else return "Deactivate";
-    },
-    userStatus() {
-      if (this.randomUser.is_active === false) {
-        return "Active";
-      } else return "Inactive";
-    },
   },
+  computed: {},
 };
 </script>

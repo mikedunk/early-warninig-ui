@@ -24,7 +24,7 @@
                     <input
                       type="email"
                       class="form-control"
-                      :class="{ 'is-valid': emailValid}"
+                      :class="{ 'is-valid': emailFormatValid }"
                       id="email"
                       aria-describedby="emailHelp"
                       v-model="form.email"
@@ -88,7 +88,7 @@
         </div>
       </div>
     </div>
-    <UserModal
+    <NewUserModal
       :visible="showUserModal"
       :title="'Create New User'"
       :rand="randomUser"
@@ -102,25 +102,25 @@
             Are you sure you want to create a new user?
           </h5>
         </div>
-        <ul class="justify-content-center border-top">
-          <li>
+        <div class="justify-content-center border-top">
+          <p>
             First name :
             <b> {{ randomUser.first_name }}</b>
-          </li>
-          <li>
+          </p>
+          <p>
             Last Name :
             <b>{{ randomUser.last_name }}</b>
-          </li>
-          <li>
+          </p>
+          <p>
             Email :
             <b>{{ randomUser.email }}</b>
-          </li>
-          <li>
+          </p>
+          <p>
             Role :
 
-            <b> {{ randomUser.user_type }}</b>
-          </li>
-        </ul>
+            <b> {{ forUserType(randomUser.user_type) }}</b>
+          </p>
+        </div>
         <div class="text-danger" v-show="error">
           {{ error }}
         </div>
@@ -128,20 +128,20 @@
           <i class="fa fa-spinner fa-spin fa-3x fa-fw"></i>
         </div>
       </template>
-    </UserModal>
+    </NewUserModal>
   </main>
 </template>
 
 
 <script>
 import Service from "@/apis/services";
-import UserModal from "../components/UserModal.vue";
+import NewUserModal from "../components/NewUserModal.vue";
 
 export default {
   components: {
-    UserModal,
+    NewUserModal,
   },
-  name: "signup",
+  name: "newuser",
   data() {
     return {
       form: {
@@ -173,7 +173,9 @@ export default {
         const roles = await Service.getAuthRoles();
         this.usertypes = roles.data.user_types;
       } catch (error) {
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       }
     },
 
@@ -184,19 +186,19 @@ export default {
         if (newuser.data.success === true) {
           this.createSuccess = true;
         }
-        this.closeGModal()
+        this.closeGModal();
         this.$router.push({ path: "/auth/users" });
-
       } catch (error) {
-        console.log(error.response.data.error);
-        this.error = error.response.data.error;
-        console.log(error);
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
       } finally {
         this.loading = false;
       }
     },
     showGModal(item) {
       this.randomUser = item;
+
       this.showUserModal = true;
     },
     closeGModal() {
@@ -209,15 +211,44 @@ export default {
       this.createUser();
     },
     async checkIfEmailExists() {
-      {
-        try {
-          const emailExists = await Service.validateEmail(this.form.email);
-          if (emailExists.data.success === true) {
-            this.emailAvailable = true;
-          }
-        } catch (error) {
-          console.log(error);
+      try {
+        const emailExists = await Service.validateEmail(this.form.email);
+        if (emailExists.data.success === true) {
+          this.emailAvailable = true;
         }
+      } catch (error) {
+        if (error.response) {
+          this.error = error.response.data.message;
+        } else this.error = error.message;
+      }
+    },
+    emailValid() {
+      if (this.form.email.length < 6) {
+        this.emailFormatValid = false;
+        return false;
+      }
+      const mailformat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
+      if (mailformat.test(this.form.email)) {
+        this.emailFormatValid = true;
+        return true;
+      } else {
+        this.emailFormatValid = false;
+        return false;
+      }
+    },
+    forUserType(usertype) {
+      switch (usertype) {
+        case "care_giver":
+          return "Care Giver";
+
+        case "admin":
+          return "Administrator";
+
+        case "nurse":
+          return "Nurse";
+
+        default:
+          return usertype;
       }
     },
   },
@@ -226,18 +257,6 @@ export default {
       if (this.error !== null || this.form.user_type === "") {
         return true;
       } else return false;
-    },
-
-    emailValid() {
-      if (this.form.email.length < 6) {
-        return false;
-      }
-      const mailformat = /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/;
-      if (mailformat.test(this.form.email)) {
-        return true;
-      } else {
-        return false;
-      }
     },
   },
 };

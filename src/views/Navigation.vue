@@ -69,12 +69,12 @@
               </router-link>
             </li>
           </div>
-          <div > 
+          <div>
             <li class="nav-item">
               <span
                 class="nav-link d-flex justify-content-between align-items-center"
                 :class="{ collapsed: !collapseMenu }"
-                 @click="toggle"
+                @click="toggle"
               >
                 <span>
                   <span class="sidebar-icon"
@@ -96,17 +96,17 @@
                 <ul class="d-flex nav">
                   <li class="nav-item">
                     <router-link class="nav-link" to="/auth/users">
-                      <span class="sidebar-icon">
+                      <!-- <span class="sidebar-icon">
                         <span class="fas fa-user"></span>
-                      </span>
+                      </span> -->
                       <span class="sidebar-text">View Users</span>
                     </router-link>
                   </li>
                   <li class="nav-item">
                     <router-link class="nav-link" to="/auth/users/new">
-                      <span class="sidebar-icon">
+                      <!-- <span class="sidebar-icon">
                         <span class="fas fa-user-plus"></span>
-                      </span>
+                      </span> -->
                       <span class="sidebar-text">New User</span>
                     </router-link>
                   </li>
@@ -155,6 +155,42 @@
             </li>
           </div>
 
+          <li
+            role="separator"
+            class="dropdown-divider mt-4 mb-3 border-white"
+          ></li>
+          <li class="nav-item">
+            <span
+              class="nav-link d-flex justify-content-between align-items-center"
+              :class="{ collapsed: !collapseSettingsMenu }"
+              @click="toggle2"
+            >
+              <span>
+                <span class="sidebar-icon"
+                  ><span class="fas fa-cog"></span
+                ></span>
+                <span class="sidebar-text">Settings</span>
+              </span>
+              <span class="link-arrow"
+                ><span class="fas fa" :class="toggIcon"></span
+              ></span>
+            </span>
+            <div
+              class="multi-level collapse"
+              role="list"
+              id="settings-menu"
+              aria-expanded="false"
+              :class="{ show: !collapseSettingsMenu }"
+            >
+              <ul class=" nav">
+                <li class="nav-item">
+                  <router-link class="nav-link" to="/auth/changepassword">
+                    <span class="sidebar-text">Change Password</span>
+                  </router-link>
+                </li>
+              </ul>
+            </div>
+          </li>
           <li class="nav nav-item">
             <router-link
               class="nav-link btn btn-secondary d-flex align-items-center justify-content-center btn-upgrade-pro"
@@ -182,6 +218,7 @@ export default {
       usertype: null,
       turnOffShow: false,
       collapseMenu: true,
+      collapseSettingsMenu: true,
     };
   },
   mounted() {
@@ -202,10 +239,18 @@ export default {
     toggle() {
       this.collapseMenu = !this.collapseMenu;
     },
+    toggle2() {
+      this.collapseSettingsMenu = !this.collapseSettingsMenu;
+    },
   },
   computed: {
     selIcon() {
       if (this.collapseMenu == true) {
+        return "fa-chevron-right";
+      } else return "fa-chevron-down";
+    },
+    toggIcon() {
+      if (this.collapseSettingsMenu == true) {
         return "fa-chevron-right";
       } else return "fa-chevron-down";
     },
