@@ -95,7 +95,11 @@
               >
                 <ul class="d-flex nav">
                   <li class="nav-item">
-                    <router-link class="nav-link" to="/auth/users">
+                    <router-link
+                      class="nav-link"
+                      to="/auth/users"
+                      @click="turnOffShow = false"
+                    >
                       <!-- <span class="sidebar-icon">
                         <span class="fas fa-user"></span>
                       </span> -->
@@ -103,7 +107,11 @@
                     </router-link>
                   </li>
                   <li class="nav-item">
-                    <router-link class="nav-link" to="/auth/users/new">
+                    <router-link
+                      class="nav-link"
+                      to="/auth/users/new"
+                      @click="turnOffShow = false"
+                    >
                       <!-- <span class="sidebar-icon">
                         <span class="fas fa-user-plus"></span>
                       </span> -->
@@ -159,49 +167,57 @@
             role="separator"
             class="dropdown-divider mt-4 mb-3 border-white"
           ></li>
-          <li class="nav-item">
-            <span
-              class="nav-link d-flex justify-content-between align-items-center"
-              :class="{ collapsed: !collapseSettingsMenu }"
-              @click="toggle2"
-            >
-              <span>
-                <span class="sidebar-icon"
-                  ><span class="fas fa-cog"></span
+          <div>
+            <li class="nav-item">
+              <span
+                class="nav-link d-flex justify-content-between align-items-center"
+                :class="{ collapsed: !collapseSettingsMenu }"
+                @click="toggle2"
+              >
+                <span>
+                  <span class="sidebar-icon"
+                    ><span class="fas fa-cog"></span
+                  ></span>
+                  <span class="sidebar-text">Settings</span>
+                </span>
+                <span class="link-arrow"
+                  ><span class="fas fa" :class="toggIcon"></span
                 ></span>
-                <span class="sidebar-text">Settings</span>
               </span>
-              <span class="link-arrow"
-                ><span class="fas fa" :class="toggIcon"></span
-              ></span>
-            </span>
-            <div
-              class="multi-level collapse"
-              role="list"
-              id="settings-menu"
-              aria-expanded="false"
-              :class="{ show: !collapseSettingsMenu }"
-            >
-              <ul class=" nav">
-                <li class="nav-item">
-                  <router-link class="nav-link" to="/auth/changepassword">
-                    <span class="sidebar-text">Change Password</span>
-                  </router-link>
-                </li>
-              </ul>
-            </div>
-          </li>
-          <li class="nav nav-item">
-            <router-link
-              class="nav-link btn btn-secondary d-flex align-items-center justify-content-center btn-upgrade-pro"
-              to="/"
-            >
-              <span class="sidebar-icon">
-                <span class="fas fa-rocket me-2"></span>
-              </span>
-              <span @click="logout">Logout</span>
-            </router-link>
-          </li>
+              <div
+                class="multi-level collapse"
+                role="list"
+                id="settings-menu"
+                aria-expanded="false"
+                :class="{ show: !collapseSettingsMenu }"
+              >
+                <ul class="nav">
+                  <li class="nav-item">
+                    <router-link
+                      class="nav-link"
+                      to="/auth/changepassword"
+                      @click="turnOffShow = false"
+                    >
+                      <span class="sidebar-text">Change Password</span>
+                    </router-link>
+                  </li>
+                </ul>
+              </div>
+            </li>
+          </div>
+          <div>
+            <li class="nav nav-item">
+              <router-link
+                class="nav-link btn btn-secondary d-flex align-items-center justify-content-center btn-upgrade-pro"
+                to="/"
+              >
+                <span class="sidebar-icon">
+                  <span class="fas fa-rocket me-2"></span>
+                </span>
+                <span @click="logout">Logout</span>
+              </router-link>
+            </li>
+          </div>
         </ul>
       </div>
     </nav>
