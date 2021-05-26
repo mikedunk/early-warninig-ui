@@ -1,4 +1,4 @@
-import { createWebHistory, createRouter } from "vue-router";
+import { createRouter, createWebHistory } from "vue-router";
 import Dashboard from "@/views/Dashboard.vue";
 import MyComplaints from "@/views/MyComplaints.vue";
 import PendingComplaints from "@/views/PendingComplaints.vue";
@@ -134,7 +134,7 @@ const routes = [
                 path: "changepassword",
                 name: "changepassword",
                 component: ChangePassword,
-                meta: { requiresAuth: true},
+                meta: { requiresAuth: true },
                 beforeEnter: (to, from, next) => {
                     if (user_ == undefined && token == undefined) {
                         next({ name: 'login' })
@@ -154,7 +154,7 @@ const routes = [
 
 const router = createRouter({
     history: createWebHistory(),
-    routes,
+    routes ,
 });
 
 

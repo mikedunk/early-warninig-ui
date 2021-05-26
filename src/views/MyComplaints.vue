@@ -89,7 +89,7 @@
 
      <GenericModal
         :visible="showGenericModal"
-        :title="'Pending Complaints'"
+        :title="'My Complaints'"
         :rand="randomItem"
         @closeGenericModal="closeGModal"
         @submitData="closeGModal"

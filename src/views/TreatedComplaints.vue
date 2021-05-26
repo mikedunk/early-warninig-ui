@@ -74,7 +74,7 @@
     </div>
     <GenericModal
         :visible="showGenericModal"
-        :title="'Pending Complaints'"
+        :title="'Treated Complaints'"
         :rand="randomItem"
         @closeGenericModal="closeGModal"
         @submitData="closeGModal"
